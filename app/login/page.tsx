@@ -2,12 +2,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { browserClient } from "@/lib/supabase-browser";
+import { googleOptions } from "@/lib/google-oauth";
+import { Stage } from "@/components/Stage";
+import "../app.css";
+import "../onboard.css";
 import "./login.css";
-
-const SCOPES = [
-  "https://www.googleapis.com/auth/gmail.readonly",
-  "https://www.googleapis.com/auth/calendar.readonly",
-].join(" ");
 
 export default function Login() {
   const [mode, setMode] = useState<"in" | "up">("in");
@@ -39,43 +38,40 @@ export default function Login() {
     setBusy(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${location.origin}/auth/callback`,
-        scopes: SCOPES,
-        // offline + consent make Google return a refresh token for background sync;
-        // select_account always shows the account picker so users can switch Gmail accounts
-        queryParams: { access_type: "offline", prompt: "select_account consent" },
-      },
+      options: googleOptions(location.origin),
     });
     if (error) { setBusy(false); setMsg(error.message); }
   }
 
   return (
-    <main className="auth">
-      <img className="logo" src="/pinbox-logo.png" alt="Pinbox" />
-      <form className="box" onSubmit={submit}>
-        <div className="seg">
-          <button type="button" className={mode === "in" ? "on" : ""} onClick={() => setMode("in")}>log in</button>
-          <button type="button" className={mode === "up" ? "on" : ""} onClick={() => setMode("up")}>sign up</button>
-        </div>
-        <h1>Welcome to Pinbox!</h1>
-        <p>Log in or sign up to begin.</p>
-        <label htmlFor="em">email</label>
-        <input id="em" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        <label htmlFor="pw">password</label>
-        <input id="pw" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="button" className="fg" onClick={async () => {
-          if (!email) return setMsg("Enter your email first.");
-          const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback` });
-          setMsg(error ? error.message : "Password reset email sent.");
-        }}>forgot password?</button>
-        <button className="ct" disabled={busy}>continue</button>
-        <div className="or"><span>or sign in with</span></div>
-        <button type="button" className="gb" onClick={google} disabled={busy}>
-          <img src="/google-g.png" alt="" width={26} height={26} /> Google
-        </button>
-        {msg && <p role="status" className="msg">{msg}</p>}
-      </form>
-    </main>
+    <Stage>
+      <div className="ob">
+        <img className="wv" src="/figma/waves.svg" alt="" />
+        <img className="lg" src="/figma/pinbox-logo.svg" alt="Pinbox" />
+        <form className="card" onSubmit={submit}>
+          <div className="seg" role="group" aria-label="Log in or sign up">
+            <button type="button" className={mode === "in" ? "on" : ""} aria-pressed={mode === "in"} onClick={() => setMode("in")}>log in</button>
+            <button type="button" className={mode === "up" ? "on" : ""} aria-pressed={mode === "up"} onClick={() => setMode("up")}>sign up</button>
+          </div>
+          <h1 className="t" style={{ left: 777, top: 203, font: "500 36px/1.2 var(--bd)" }}>Welcome to Pinbox!</h1>
+          <p className="t" style={{ left: 777, top: 253, font: "300 24px/1.2 var(--bd)" }}>Log in or sign up to begin.</p>
+          <label className="t lbl" htmlFor="em" style={{ top: 293 }}>email</label>
+          <input className="fld" id="em" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ top: 323 }} />
+          <label className="t lbl" htmlFor="pw" style={{ top: 386 }}>password</label>
+          <input className="fld" id="pw" type="password" required minLength={8} autoComplete={mode === "in" ? "current-password" : "new-password"} value={password} onChange={(e) => setPassword(e.target.value)} style={{ top: 416 }} />
+          <button type="button" className="fg" onClick={async () => {
+            if (!email) return setMsg("Enter your email first.");
+            const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback` });
+            setMsg(error ? error.message : "Password reset email sent.");
+          }}>forgot password?</button>
+          <button className="btn" disabled={busy} style={{ left: 777, top: 509 }}>continue</button>
+          <div className="or"><span>or sign in with</span></div>
+          <button type="button" className="btn dk" onClick={google} disabled={busy} style={{ left: 777, top: 594, fontSize: 16 }}>
+            <img src="/figma/google-g.png" alt="" width={28} height={28} /> Google
+          </button>
+          {msg && <p role="status" className="msg" style={{ left: 777, top: 652, width: 390 }}>{msg}</p>}
+        </form>
+      </div>
+    </Stage>
   );
 }

@@ -101,7 +101,7 @@ export function PipelineView({ rows, resumes }: { rows: Row[]; resumes: ResumeOp
           })}
           {!shown.length && (
             <div className="nodata" style={{ position: "relative", top: 60 }}>
-              {rows.length ? "No matches." : "No applications yet. Add an entry, import a CSV, or run the Gmail backfill."}
+              {rows.length ? "No matches." : <>No applications yet. Add an entry, import a CSV (<a href="/sample-applications.csv" download style={{ color: "var(--or)" }}>sample</a>), or run the Gmail backfill.</>}
             </div>
           )}
         </div>
@@ -118,7 +118,7 @@ function CsvImport() {
   const [note, setNote] = useState("");
   useEffect(() => {
     if (state.error) setNote(state.error);
-    else if (state.ok) setNote(`Imported ${state.added}${state.skipped ? `, skipped ${state.skipped} already in your pipeline` : ""}.`);
+    else if (state.ok) setNote(`Imported ${state.added}${state.merged ? `, merged ${state.merged} into existing entries` : ""}${state.skipped ? `, ${state.skipped} unchanged` : ""}.`);
     if (state.ok || state.error) { const t = setTimeout(() => setNote(""), 6000); return () => clearTimeout(t); }
   }, [state]);
   return (

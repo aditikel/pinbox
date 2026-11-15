@@ -10,7 +10,7 @@ import "../app.css";
 import "./home.css";
 
 // Upcoming filter chips -> event categories (from lib/classify.ts). No meetup category is produced yet.
-const FILTERS = [["All", 518, 45], ["Interview", 573, 88], ["Meetups", 672, 87], ["Coffee", 770, 68]] as const;
+const FILTERS = ["All", "Interview", "Meetups", "Coffee"] as const;
 const CATS: Record<string, string[]> = {
   All: ["interview_invite", "scheduling", "coffee_chat", "meetup"],
   Interview: ["interview_invite", "scheduling"],
@@ -91,9 +91,9 @@ export default async function Home({ searchParams }: { searchParams: Search }) {
     <Stage>
       <Sidebar current="home" name={displayName(user)} />
 
-      <h1 className="big" style={{ left: 303, top: 47 }}>DAILY AGENDA</h1>
+      <h1 className="big" style={{ left: 301, top: 40 }}>DAILY AGENDA</h1>
       {found && <p className="found" role="status">Found {found} applications from your inbox.</p>}
-      <Link className="pill" href="/pipeline" style={{ left: 731, top: 74, width: 104 }}>Edit entries</Link>
+      <Link className="pill" href="/pipeline" style={{ left: 731, top: 74 }}>Edit entries</Link>
       <AddEntry resumes={resumes} />
 
       <section className="ag" aria-label="Daily agenda">
@@ -119,13 +119,14 @@ export default async function Home({ searchParams }: { searchParams: Search }) {
         </ul>
       </section>
 
-      <h1 className="big" style={{ left: 303, top: 571, fontSize: 40 }}>UPCOMING</h1>
-      {FILTERS.map(([f, x, w]) => (
-        <Link key={f} href={f === "All" ? "/home" : `/home?uf=${f}`} scroll={false} className={`chip ${filter === f ? "on" : ""}`} style={{ left: x, top: 574, width: w }}>{f}</Link>
-      ))}
+      <h1 className="big" style={{ left: 301, top: 567, fontSize: 36 }}>UPCOMING</h1>
+      <div className="chips" style={{ left: 518, top: 573 }}>
+        {FILTERS.map((f) => (
+          <Link key={f} href={f === "All" ? "/home" : `/home?uf=${f}`} scroll={false} className={`chip ${filter === f ? "on" : ""}`} aria-current={filter === f ? "true" : undefined}>{f}</Link>
+        ))}
+      </div>
       {E.length ? (
         <>
-          <div className="a" style={{ left: 305, top: 632, width: 2, height: 128, background: "linear-gradient(#a34558 0 33%,#d18951 33% 66%,#e63f6b 66%)", opacity: 0.7 }} />
           {E.map((e, k) => {
             const top = [619, 683, 747][k];
             const [label, color] = EV_STYLE[e.category] ?? ["Event", "#e63f6b"];
@@ -134,14 +135,17 @@ export default async function Home({ searchParams }: { searchParams: Search }) {
             const at = new Date(e.occurred_at!);
             return (
               <div key={e.id}>
-                <div className="a" style={{ left: 301, top: top + 16, width: 10, height: 10, borderRadius: "50%", background: color }} />
+                <div className="up-dot" style={{ top: top + 8, background: color }} />
+                {k < E.length - 1 && <div className="up-seg" style={{ top: top + 18, background: color }} />}
                 <div className="up" style={{ top }}>
                   <div className="dt">
                     <div className="d1" style={{ color }}>{at.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</div>
                     <div className="d2">{at.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</div>
                   </div>
-                  <div className="e1">{label} · {app?.company ?? f.company ?? ""}</div>
-                  <div className="e2" style={{ color }}>{[app?.role ?? f.role, f.round].filter(Boolean).join(" - ")}</div>
+                  <div className="ev">
+                    <div className="e1">{label} · {app?.company ?? f.company ?? ""}</div>
+                    <div className="e2" style={{ color }}>{[app?.role ?? f.role, f.round].filter(Boolean).join(" - ")}</div>
+                  </div>
                 </div>
               </div>
             );
@@ -151,25 +155,25 @@ export default async function Home({ searchParams }: { searchParams: Search }) {
         <div className="nodata" style={{ left: 322, top: 640, width: 520, textAlign: "left" }}>No upcoming events in this category.</div>
       )}
 
-      <h1 className="big" style={{ left: 988, top: 47 }}>YOUR {year}</h1>
+      <h1 className="big" style={{ left: 987, top: 40 }}>YOUR {year}</h1>
       <div className="a" role="img" aria-label={GROUPS.map(([n], k) => `${n} ${groupCounts[k]}`).join(", ")}
-        style={{ left: 979, top: 113, width: 248, height: 248, borderRadius: "50%", border: "4px solid var(--pie)", background: `conic-gradient(${pie})` }} />
+        style={{ left: 979, top: 113, width: 249, height: 249, borderRadius: "50%", border: "4.5px solid var(--pie)", background: `conic-gradient(${pie})` }} />
       {GROUPS.map(([n, , c], k) => (
         <div key={n} className="lgd" style={{ top: 378 + k * 24 }}><i style={{ background: c }} /><s>{n}</s><b>{groupCounts[k]}</b></div>
       ))}
-      <div className="tile" style={{ left: 979 }}><div className="ti-ic" style={{ color: "#a34558" }}><Icon name="user2" /></div><div className="ti-n">{connections ?? 0}</div><div className="ti-l">connections</div></div>
-      <div className="tile" style={{ left: 1118 }}><div className="ti-ic" style={{ color: "#d18951" }}><Icon name="case" /></div><div className="ti-n">{appliedCount}</div><div className="ti-l">applied jobs</div></div>
+      <div className="tile" style={{ left: 979, width: 123 }}><div className="ti-ic" style={{ color: "#a34558" }}><Icon name="user" size={24} /></div><div className="ti-n">{connections ?? 0}</div><div className="ti-l">connections</div></div>
+      <div className="tile" style={{ left: 1118, width: 141 }}><img className="ti-ic" src="/figma/briefcase.svg" width={24} height={24} alt="" /><div className="ti-n">{appliedCount}</div><div className="ti-l">applied jobs</div></div>
 
       <svg className="a" style={{ left: 940, top: 590 }} width="340" height="215" viewBox="940 590 340 215" role="img" aria-label={`Applications by month: ${months.map((m, k) => `${MON[m.getMonth()]} ${perMonth[k]}`).join(", ")}`}>
-        <text x="978" y="606" fontSize="13" fontFamily="Mulish" fill="var(--tx)">number applied by month</text>
+        <text x="978" y="606" fontSize="15" fontWeight="300" fontFamily="Sunflower" fill="var(--tx)">number applied by month</text>
         <path d="M973 594V774H1259" stroke="#a34558" strokeWidth="3" fill="none" />
         {[5, 4, 3, 2, 1].map((s) => (
-          <text key={s} x="960" y={y((max * s) / 5) + 5} fontSize="15" fontFamily="Mulish" fill="var(--tx)" textAnchor="end">{(max * s) / 5}</text>
+          <text key={s} x="943" y={y((max * s) / 5) + 5} fontSize="15" fontWeight="300" fontFamily="Sunflower" fill="var(--tx)">{(max * s) / 5}</text>
         ))}
         <polyline points={pts} fill="none" stroke="#d18951" strokeWidth="2" />
         {perMonth.map((v, k) => <circle key={k} cx={995 + k * 59} cy={y(v)} r="3" fill="#d18951" />)}
         {months.map((m, k) => (
-          <text key={k} x={995 + k * 59} y="793" fontSize="15" fontFamily="'Chakra Petch'" fill="var(--tx)" textAnchor="middle">{MON[m.getMonth()]}</text>
+          <text key={k} x={995 + k * 59} y="793" fontSize="16" fontWeight="300" fontFamily="Sunflower" fill="var(--tx)" textAnchor="middle">{MON[m.getMonth()]}</text>
         ))}
       </svg>
     </Stage>

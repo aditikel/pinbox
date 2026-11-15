@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { serverClient } from "@/lib/supabase";
-import { accessTokenFor, listThreadIds, fetchSlim } from "@/lib/gmail";
+import { accessTokenFor, listThreadIds, fetchSlim, NoGoogleConnection } from "@/lib/gmail";
 import { classify, ClassifierConfigError } from "@/lib/classify";
 import { plan, type ExistingApp } from "@/lib/ingest";
 import { key } from "@/lib/normalize";
+import { MAX_BACKFILL_DAYS, DEFAULT_BACKFILL_DAYS, daysAgo } from "@/lib/backfill";
 
 export const maxDuration = 300; // Vercel limit. Backfill is capped to fit.
+
+const Body = z.object({ since: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional() });
 
 const REQUIRED = ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "TOKEN_ENCRYPTION_KEY", "ANTHROPIC_API_KEY", "SUPABASE_SERVICE_ROLE_KEY"];
 const PLACEHOLDERS = new Set(["from-google-cloud-console", "your-anthropic-key", "your-service-role-key"]); // values copied from .env.example
@@ -13,10 +17,11 @@ const PLACEHOLDERS = new Set(["from-google-cloud-console", "your-anthropic-key",
 /**
  * Streams newline-delimited JSON so /start can show progress:
  *   {"type":"progress","scanned":12,"total":80,"found":5}
- *   {"type":"done","scanned":80,"total":80,"found":31,"failed":0,"days":60}
- *   {"type":"error","error":"..."}
+ *   {"type":"done","scanned":80,"total":80,"found":31,"failed":0,"since":"2026-09-16"}
+ *   {"type":"error","error":"...","code":"connect_google"?}   (code set when Gmail isn't connected)
+ * Body (optional): {"since":"YYYY-MM-DD"}, the oldest email date to read. Defaults to BACKFILL_DAYS (60) ago.
  */
-export async function POST() {
+export async function POST(req: Request) {
   const supabase = await serverClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
@@ -24,7 +29,13 @@ export async function POST() {
   const missing = REQUIRED.filter((k) => !process.env[k] || PLACEHOLDERS.has(process.env[k]!));
   if (missing.length) return NextResponse.json({ error: `Backfill isn't set up yet. Missing in .env.local: ${missing.join(", ")}` }, { status: 500 });
 
-  const days = Number(process.env.BACKFILL_DAYS ?? 60);
+  const parsed = Body.safeParse(await req.json().catch(() => ({})));
+  if (!parsed.success) return NextResponse.json({ error: "Start date must look like YYYY-MM-DD." }, { status: 400 });
+  // One day of slack each way so a browser in another time zone isn't rejected.
+  const latest = daysAgo(-1), oldest = daysAgo(MAX_BACKFILL_DAYS + 1);
+  const since = parsed.data.since ?? daysAgo(Number(process.env.BACKFILL_DAYS ?? DEFAULT_BACKFILL_DAYS));
+  if (isNaN(Date.parse(since)) || since > latest || since < oldest)
+    return NextResponse.json({ error: `Pick a start date within the last ${MAX_BACKFILL_DAYS} days.` }, { status: 400 });
   const enc = new TextEncoder();
 
   const stream = new ReadableStream({
@@ -32,7 +43,7 @@ export async function POST() {
       const send = (o: object) => ctrl.enqueue(enc.encode(JSON.stringify(o) + "\n"));
       try {
         const token = await accessTokenFor(user.id);
-        const ids = await listThreadIds(token, days);
+        const ids = await listThreadIds(token, since);
 
         // Skip threads the user deleted, and threads already processed by an earlier run (no repeat LLM calls, no duplicate actions).
         const [{ data: ignored }, { data: seen }] = await Promise.all([
@@ -70,9 +81,9 @@ export async function POST() {
         await Promise.all(Array.from({ length: 5 }, worker));
         await writes;
         if (fatal) throw fatal;
-        send({ type: "done", scanned, total: todo.length, found, failed, days });
+        send({ type: "done", scanned, total: todo.length, found, failed, since });
       } catch (e: any) {
-        send({ type: "error", error: e?.message ?? "Backfill failed." });
+        send({ type: "error", error: e?.message ?? "Backfill failed.", code: e instanceof NoGoogleConnection ? "connect_google" : undefined });
       } finally {
         ctrl.close();
       }

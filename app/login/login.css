@@ -1,21 +1,11 @@
-/* Values sampled from your Figma PDF (dark theme). Swap to the light tokens for light mode. */
-:root{--bg:#242124;--card:#20171e;--ac:#a34558;--field:#2e2429;--tx:#feffdc;--lbl:#e63f6b}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:'Titillium Web',sans-serif}
-.auth{min-height:100vh;display:grid;grid-template-columns:1fr 484px;align-items:center;gap:40px;padding:0 6vw;
-  background:url(/login-waves-dark.webp) center/cover no-repeat}
-.logo{width:min(520px,40vw);justify-self:center}
-.box{background:var(--card);border:2px solid var(--ac);border-radius:10px;padding:25px 44px 40px;display:flex;flex-direction:column}
-.seg{display:flex;width:291px;height:38px;border-radius:19px;background:var(--field);margin:0 auto 24px}
-.seg button{flex:1;border:0;border-radius:19px;background:none;color:var(--tx);font:400 22px 'Titillium Web'}
-.seg .on{background:var(--ac)}
-h1{margin:0;font:600 35px/44px 'Titillium Web'}p{margin:4px 0 12px;font-size:22px}
-label{color:var(--lbl);font-size:19px;margin-top:12px}
-input{height:41px;border-radius:8px;border:1px solid var(--ac);background:var(--field);color:var(--tx);padding:0 12px;font-size:15px}
-.fg{align-self:flex-end;border:0;background:none;color:var(--lbl);font-size:12px;margin:4px 0 24px;padding:0}
-.ct{height:41px;border:0;border-radius:8px;background:var(--ac);color:var(--tx);font:400 24px 'Titillium Web'}
-.or{text-align:center;font-size:12px;margin:10px 0;display:flex;align-items:center;gap:10px}
-.or:before,.or:after{content:"";flex:1;height:1px;background:var(--tx)}
-.gb{height:41px;border-radius:8px;border:1px solid var(--ac);background:var(--field);color:var(--tx);font:400 16px 'Titillium Web';display:flex;align-items:center;justify-content:center;gap:8px}
-.msg{font-size:14px;color:var(--lbl);margin:12px 0 0}
-button:disabled{opacity:.6}
-@media(max-width:900px){.auth{grid-template-columns:1fr;padding:24px}.logo{width:60vw}}
+/* Login card, positions from Figma "Login Page" (2102:357). Shared canvas pieces live in ../onboard.css. */
+.ob .card{position:absolute;inset:0;margin:0}
+.ob .card:before{content:"";position:absolute;left:730px;top:107px;width:485px;height:617px;box-sizing:border-box;background:#20171e;border:2px solid #a34558;border-radius:10px}
+.ob .seg{position:absolute;left:839px;top:134px;width:291px;height:38px;border-radius:20px;background:#2e2429;display:flex}
+.ob .seg button{width:145px;flex:none;border:0;border-radius:20px;background:none;color:#feffdc;font:300 24px/1 var(--bd);padding:0}
+.ob .seg button:last-child{flex:1}.ob .seg .on{background:#a34558}
+.ob .lbl{left:777px;font:300 20px/1.2 var(--bd);color:#e63f6b}
+.ob .fld{position:absolute;left:777px;width:390px;height:41px;border:1px solid #a34558;border-radius:10px;background:#2e2429;color:#feffdc;padding:0 12px;font:300 16px var(--bd);outline-offset:2px}
+.ob .fg{position:absolute;right:113px;top:457px;border:0;background:none;padding:0;color:#a34558;font:300 14px/1.2 var(--bd)}
+.ob .or{position:absolute;left:780px;top:558px;width:385px;display:flex;align-items:center;gap:6px;font:300 14px/1.2 var(--bd);color:#feffdc;white-space:nowrap}
+.ob .or:before,.ob .or:after{content:"";flex:1;height:1px;background:#feffdc}

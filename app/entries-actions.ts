@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { serverClient } from "@/lib/supabase";
 import { key } from "@/lib/normalize";
+import { match, mergeCsv, type CsvRow, type MergeTarget } from "@/lib/ingest";
 import { STATUSES } from "@/lib/statuses";
 
 export type EntryState = { error?: string; ok?: number };
@@ -75,9 +76,13 @@ export async function deleteEntry(id: string) {
   refresh();
 }
 
-export type ImportState = { error?: string; added?: number; skipped?: number; ok?: number };
+export type ImportState = { error?: string; added?: number; merged?: number; skipped?: number; ok?: number };
 
-/** CSV import: columns are matched by header name (company, role, status, next action, deadline, date applied). */
+/**
+ * CSV import: columns are matched by header name (company, role, status, next action, deadline, date applied).
+ * Rows that match an application already in Pinbox (from the Gmail backfill or an earlier import) are merged
+ * into it with mergeCsv (lib/ingest.ts) instead of being duplicated or skipped.
+ */
 export async function importCsv(_: ImportState, form: FormData): Promise<ImportState> {
   const supabase = await serverClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -92,29 +97,64 @@ export async function importCsv(_: ImportState, form: FormData): Promise<ImportS
   const ix = { company: col("company"), role: col("role", "position", "title"), status: col("status", "stage"), next: col("next"), deadline: col("deadline", "due"), applied: col("applied", "date") };
   if (ix.company < 0) return { error: "No “company” column found in the first row." };
 
+  const { data: existing, error: readError } = await supabase.from("applications")
+    .select("id,company_key,role,role_key,status,deadline,next_action,date_applied,edited_fields");
+  if (readError) return { error: "Import failed. Couldn't read your pipeline." };
+  const byCompany = new Map<string, MergeTarget[]>();
+  for (const a of (existing ?? []) as (MergeTarget & { company_key: string })[]) {
+    byCompany.set(a.company_key, [...(byCompany.get(a.company_key) ?? []), a]);
+  }
+
   const seen = new Set<string>();
-  const records = rows.map((r) => {
+  const inserts: Record<string, unknown>[] = [];
+  const updates: { id: string; u: Record<string, unknown> }[] = [];
+  let unchanged = 0;
+  for (const r of rows) {
     const get = (i: number) => (i >= 0 ? (r[i] ?? "").trim() : "");
     const company = get(ix.company), role = get(ix.role);
-    if (!company) return null;
-    const k = key(company) + "|" + key(role);
-    if (seen.has(k)) return null;
-    seen.add(k);
-    const status = STATUSES.find((s) => s.toLowerCase() === get(ix.status).toLowerCase()) ?? (/interview/i.test(get(ix.status)) ? "Interview" : "Applied");
-    const deadline = toDay(get(ix.deadline)), next = get(ix.next) || null;
-    return {
-      user_id: user.id, company, company_key: key(company), role, role_key: key(role), status, next_action: next, deadline,
-      date_applied: toDay(get(ix.applied)), source: "csv",
-      edited_fields: ["company", "role", "status", next && "next_action", deadline && "deadline"].filter(Boolean) as string[],
+    if (!company) continue;
+    const ck = key(company), rk = key(role);
+    if (seen.has(ck + "|" + rk)) { unchanged++; continue; } // repeated row in the same file
+    seen.add(ck + "|" + rk);
+    const row: CsvRow = {
+      company, role,
+      status: STATUSES.find((s) => s.toLowerCase() === get(ix.status).toLowerCase()) ?? (/interview/i.test(get(ix.status)) ? "Interview" : "Applied"),
+      next_action: get(ix.next) || null, deadline: toDay(get(ix.deadline)), date_applied: toDay(get(ix.applied)),
     };
-  }).filter((x): x is NonNullable<typeof x> => !!x);
 
-  // Rows that match an existing company + role (from backfill or earlier imports) are skipped, not duplicated.
-  const { data, error } = await supabase.from("applications")
-    .upsert(records, { onConflict: "user_id,company_key,role_key", ignoreDuplicates: true }).select("id");
-  if (error) return { error: "Import failed. Check the file and try again." };
+    const target = match(byCompany.get(ck) ?? [], rk);
+    if (target) {
+      const u = mergeCsv(row, target);
+      Object.assign(target, u); // keeps later rows in this file merging against the latest values
+      if (target.id && Object.keys(u).length) updates.push({ id: target.id, u });
+      else unchanged++; // nothing new, or folded into a row this same file is adding
+      continue;
+    }
+    const created = {
+      user_id: user.id, company, company_key: ck, role, role_key: rk, status: row.status, next_action: row.next_action,
+      deadline: row.deadline, date_applied: row.date_applied, source: "csv",
+      edited_fields: ["company", "role", "status", row.next_action && "next_action", row.deadline && "deadline"].filter(Boolean) as string[],
+    };
+    inserts.push(created);
+    // Later rows for the same company can merge into this one instead of creating a near-duplicate.
+    byCompany.set(ck, [...(byCompany.get(ck) ?? []), created as unknown as MergeTarget]); // no id yet: merges edit the insert itself
+  }
+
+  let added = 0;
+  if (inserts.length) {
+    const { data, error } = await supabase.from("applications")
+      .upsert(inserts, { onConflict: "user_id,company_key,role_key", ignoreDuplicates: true }).select("id");
+    if (error) return { error: "Import failed. Check the file and try again." };
+    added = data?.length ?? 0;
+    unchanged += inserts.length - added;
+  }
+  let merged = 0;
+  for (const { id, u } of updates) {
+    const { error } = await supabase.from("applications").update(u).eq("id", id);
+    if (!error) merged++;
+  }
   refresh();
-  return { ok: Date.now(), added: data?.length ?? 0, skipped: records.length - (data?.length ?? 0) };
+  return { ok: Date.now(), added, merged, skipped: unchanged };
 }
 
 function toDay(s: string): string | null {

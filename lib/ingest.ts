@@ -24,13 +24,55 @@ export type Plan =
 
 const isDate = (s: string | null): s is string => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
 
-/** Pick the application this email belongs to: same company and role, or the company's only application when the email names no role. */
-export function match(apps: ExistingApp[], roleKey: string): ExistingApp | null {
+/**
+ * Pick the application a new record (email or CSV row) belongs to, within one company:
+ * same role; else the one role that contains the other ("dataScienceIntern" vs "dataScienceInternChicagoIl");
+ * else the company's only application when the record names no role; else a role-less application.
+ */
+export function match<T extends { role_key: string }>(apps: T[], roleKey: string): T | null {
   const exact = apps.find((a) => a.role_key === roleKey);
   if (exact) return exact;
+  if (roleKey) {
+    const near = apps.filter((a) => a.role_key && (a.role_key.includes(roleKey) || roleKey.includes(a.role_key)));
+    if (near.length === 1) return near[0];
+  }
   if (!roleKey && apps.length === 1) return apps[0];
   if (roleKey) { const blank = apps.find((a) => a.role_key === ""); if (blank) return blank; }
   return null;
+}
+
+// ---- CSV import merge ----
+
+export type CsvRow = { company: string; role: string; status: string; next_action: string | null; deadline: string | null; date_applied: string | null };
+export type MergeTarget = ExistingApp & { role: string; next_action: string | null; date_applied: string | null };
+const FINAL = ["Rejected", "Withdrawn"];
+
+/**
+ * What a CSV row changes on an application that already exists (usually one the Gmail backfill made).
+ * - Fields the user edited in Pinbox (edited_fields) are never touched.
+ * - Status: a final status (Rejected/Withdrawn) from either side wins; otherwise the further-along one.
+ * - Next action and deadline: the CSV value wins (the user typed it); empty CSV cells keep what's there.
+ * - Date applied: the earlier of the two. Role: filled in only when the application has none.
+ * Returns the columns to update; edited_fields gains every field the CSV set, so later syncs keep them.
+ */
+export function mergeCsv(row: CsvRow, app: MergeTarget): Record<string, unknown> {
+  const locked = new Set(app.edited_fields ?? []);
+  const u: Record<string, unknown> = {};
+  const set = (field: string, value: unknown) => { if (!locked.has(field)) u[field] = value; };
+
+  if (row.status !== app.status) {
+    const csvFinal = FINAL.includes(row.status), appFinal = FINAL.includes(app.status);
+    const csvAhead = csvFinal ? !appFinal : !appFinal && RANK.indexOf(row.status) > RANK.indexOf(app.status);
+    if (csvAhead) set("status", row.status);
+  }
+  if (row.next_action && row.next_action !== app.next_action) set("next_action", row.next_action);
+  if (row.deadline && row.deadline !== app.deadline) set("deadline", row.deadline);
+  if (row.date_applied && (!app.date_applied || row.date_applied < app.date_applied)) set("date_applied", row.date_applied);
+  if (!app.role_key && row.role.trim()) { set("role", row.role.trim()); if ("role" in u) u.role_key = key(row.role); }
+
+  const touched = Object.keys(u).filter((f) => f !== "role_key");
+  if (touched.length) u.edited_fields = [...new Set([...(app.edited_fields ?? []), ...touched])];
+  return u;
 }
 
 /**

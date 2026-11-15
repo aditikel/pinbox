@@ -5,12 +5,18 @@ import { decrypt } from "./crypto";
 const ATS = ["greenhouse.io", "lever.co", "myworkday.com", "ashbyhq.com", "icims.com", "smartrecruiters.com", "hirevue.com", "codesignal.com", "hackerrank.com", "workable.com"];
 const SUBJECTS = ["thank you for applying", "application received", "assessment", "online assessment", "interview", "coffee chat", "next steps", "offer", "unfortunately", "availability"];
 
-export const buildQuery = (days: number) =>
-  `newer_than:${days}d (from:(${ATS.join(" OR ")}) OR subject:(${SUBJECTS.map((s) => `"${s}"`).join(" OR ")})) -in:spam -in:trash`;
+// since is a YYYY-MM-DD date; Gmail's after: takes YYYY/MM/DD.
+export const buildQuery = (since: string) =>
+  `after:${since.replace(/-/g, "/")} (from:(${ATS.join(" OR ")}) OR subject:(${SUBJECTS.map((s) => `"${s}"`).join(" OR ")})) -in:spam -in:trash`;
+
+/** Thrown when the user has no saved Gmail token (token never saved, or revoked). /start offers "reconnect gmail". */
+export class NoGoogleConnection extends Error {
+  constructor(msg = "Gmail isn't connected to this account. Reconnect Gmail to backfill.") { super(msg); }
+}
 
 export async function accessTokenFor(userId: string): Promise<string> {
-  const { data } = await adminClient().from("google_tokens").select("refresh_token_enc").eq("user_id", userId).single();
-  if (!data) throw new Error("No Google connection. Sign in with Google again.");
+  const { data } = await adminClient().from("google_tokens").select("refresh_token_enc").eq("user_id", userId).maybeSingle();
+  if (!data) throw new NoGoogleConnection();
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -21,7 +27,7 @@ export async function accessTokenFor(userId: string): Promise<string> {
       grant_type: "refresh_token",
     }),
   });
-  if (!res.ok) throw new Error("Google token refresh failed. Sign in with Google again.");
+  if (!res.ok) throw new NoGoogleConnection("Google access expired or was revoked. Reconnect Gmail.");
   return (await res.json()).access_token;
 }
 
@@ -31,11 +37,11 @@ const gm = (token: string, path: string) =>
     return r.json();
   });
 
-export async function listThreadIds(token: string, days: number, cap = 300): Promise<string[]> {
+export async function listThreadIds(token: string, since: string, cap = 300): Promise<string[]> {
   const ids = new Set<string>();
   let pageToken = "";
   do {
-    const q = new URLSearchParams({ q: buildQuery(days), maxResults: "100" });
+    const q = new URLSearchParams({ q: buildQuery(since), maxResults: "100" });
     if (pageToken) q.set("pageToken", pageToken);
     const page = await gm(token, `messages?${q}`);
     (page.messages ?? []).forEach((m: any) => ids.add(m.threadId));

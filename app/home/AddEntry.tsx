@@ -6,7 +6,7 @@ export function AddEntry({ resumes }: { resumes: ResumeOption[] }) {
   const dlg = useRef<EntryDialogHandle>(null);
   return (
     <>
-      <button className="pill" style={{ left: 859, top: 74, width: 106 }} onClick={() => dlg.current?.open()}>+ Add entry</button>
+      <button className="pill" style={{ left: 859, top: 74 }} onClick={() => dlg.current?.open()}>+ Add entry</button>
       <EntryDialog ref={dlg} resumes={resumes} />
     </>
   );

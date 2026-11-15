@@ -14,11 +14,18 @@ export async function GET(req: Request) {
   // Google only returns the refresh token on this first exchange. Save it encrypted.
   const refresh = data.session.provider_refresh_token;
   if (refresh) {
-    await adminClient().from("google_tokens").upsert({
-      user_id: data.session.user.id,
-      refresh_token_enc: encrypt(refresh),
-      updated_at: new Date().toISOString(),
-    });
+    try {
+      const { error: saveError } = await adminClient().from("google_tokens").upsert({
+        user_id: data.session.user.id,
+        refresh_token_enc: encrypt(refresh),
+        updated_at: new Date().toISOString(),
+      });
+      if (saveError) throw new Error(saveError.message);
+    } catch (e: any) {
+      // Never log the token itself. A failed save would otherwise only show up later as "Gmail isn't connected".
+      console.error("google_tokens save failed:", e?.message);
+      return NextResponse.redirect(`${origin}/start?gmail=save_failed`);
+    }
   }
   return NextResponse.redirect(`${origin}/start`);
 }

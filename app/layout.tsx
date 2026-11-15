@@ -9,7 +9,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME }} />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Mulish:wght@400;600;700;800&family=Titillium+Web:wght@400;600;700&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Mulish:wght@400;600;700;800&family=Titillium+Web:wght@400;600;700&family=Tomorrow:wght@400;500&family=Sunflower:wght@300;500;700&family=Tilt+Warp&display=swap" />
       </head>
       <body>{children}</body>
     </html>
