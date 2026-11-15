@@ -1,0 +1,35 @@
+/* Shared app shell for signed-in screens. Ported from docs/pinbox-design-preview.html (values sampled from the Figma PDF). */
+:root{--bg:#242124;--sb:#20171e;--sbb:#d18951;--pn:#20171e;--pn2:#2e2429;--hl:#301c25;--tx:#feffdc;--ti:#feffdc;--mu:#78736a;--ac:#a34558;--ro:#e63f6b;--or:#d18951;--ye:#f6c564;--bl:#5a8cd7;--nm:#f6c564;--nav-on:#a34558;--ic:#796475;--tile:#3b353c;--tilet:#feffdc;--dtb:#2e2429;--dtt:#feffdc;--gbd:#4e424c;--sepc:#241c22;--pie:#d9d9d9;--ph:#8c7f85;--chipt:#b3a6a6;--chip:#2e2429;--pr-h-bg:#651a1f;--pr-h-t:#ff7575;--pr-l-bg:#4c611a;--pr-l-t:#bacf90;--pr-m-bg:#65391f;--pr-m-t:#f3a263;color-scheme:dark}
+:root[data-theme="light"]{--bg:#fdf8f4;--sb:#eedfdb;--sbb:#a34558;--pn:#f6eae6;--pn2:#fdf8f4;--hl:#ecd9d6;--tx:#242124;--ti:#20171e;--mu:#242124;--nm:#e63f6b;--nav-on:#d18951;--ic:#a34558;--tile:#242124;--tilet:#fff;--dtb:#dbd0cd;--dtt:#242124;--gbd:#d7b7be;--sepc:#fdf8f4;--pie:#d7b7be;--chipt:#7a6a6e;--chip:#f6eae6;--pr-h-bg:#f57575;--pr-h-t:#242124;--pr-l-bg:#a8be43;--pr-l-t:#242124;--pr-m-bg:#f6c564;--pr-m-t:#242124;color-scheme:light}
+
+body{margin:0;background:var(--bg);font-family:Mulish,system-ui,sans-serif;color:var(--tx)}
+.shell *{box-sizing:border-box}
+.shell button,.shell input,.shell select{font:inherit;color:inherit}.shell button{cursor:pointer}
+.shell{position:fixed;inset:0;overflow:hidden;background:var(--bg)}
+.stage{position:absolute;left:50%;top:50%;width:1280px;height:832px;transform-origin:center;transform:translate(-50%,-50%);overflow:hidden;background:var(--bg)}
+.a{position:absolute}.hd{font-family:'Chakra Petch',sans-serif}
+.big{position:absolute;margin:0;font:400 46px/1 'Chakra Petch',sans-serif;color:var(--ti);white-space:nowrap}
+.pill{position:absolute;border:0;border-radius:999px;background:var(--ac);color:#fff;font:600 14px/27px Mulish;height:27px;padding:0 12px;white-space:nowrap;text-align:center;text-decoration:none}
+.chip{position:absolute;border:0;border-radius:999px;background:var(--chip);color:var(--chipt);font:400 14px/27px Mulish;height:27px;padding:0;text-align:center;text-decoration:none}
+.chip.on{background:var(--ac);color:#fff}
+svg.i{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.nodata{position:absolute;left:0;right:0;text-align:center;color:var(--chipt);font:400 14px Mulish}
+
+/* Sidebar */
+.sidebar{position:absolute;left:0;top:0;width:250px;height:832px;background:var(--sb);border-right:3px solid var(--sbb)}
+.sidebar .logo{position:absolute;left:20px;top:28px;width:205px;height:57px}
+.logo-l{display:none}
+:root[data-theme="light"] .logo-d{display:none}:root[data-theme="light"] .logo-l{display:block}
+.wel{position:absolute;left:26px;top:122px;font:400 27px/32px 'Chakra Petch';color:var(--mu)}.wel b{display:block;font:600 40px/44px 'Chakra Petch';color:var(--nm);margin-top:2px;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rail{position:absolute;left:27px;top:269px;width:2px;height:384px;background:var(--ac)}
+.nv{position:absolute;left:47px;font:600 31px/1 'Chakra Petch';color:var(--mu);text-decoration:none;transform:translateY(-50%)}.nv.on{color:var(--nav-on)}
+.dot{position:absolute;left:22px;width:13px;height:13px;border-radius:50%;background:var(--ac);transform:translateY(-50%)}
+.tool{position:absolute;top:754px;width:48px;height:48px;border:0;background:none;color:var(--ac);padding:0}
+.tool form{display:contents}
+
+/* Dialog */
+.shell dialog{background:var(--pn);color:var(--tx);border:2px solid var(--ac);border-radius:12px;width:380px;font-family:Mulish}.shell dialog::backdrop{background:#000a}
+.shell dialog h3{margin:0 0 10px;font:600 24px 'Chakra Petch'}.shell dialog label{display:block;font-size:13px;color:var(--ac)}
+.shell dialog input,.shell dialog select{width:100%;height:34px;margin:3px 0 10px;padding:0 10px;border-radius:8px;border:1px solid var(--ac);background:var(--pn2);color:var(--tx)}
+.shell dialog .row{display:flex;gap:8px;justify-content:flex-end}.shell dialog button{border:0;border-radius:14px;height:28px;padding:0 16px;background:var(--ac);color:#fff}.shell dialog button.g{background:var(--pn2);color:var(--chipt)}
+.shell dialog .err{color:var(--ro);font-size:13px;margin:0 0 10px}

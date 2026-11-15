@@ -1,0 +1,25 @@
+Stakeholders
+Students who need an easy system to help them keep track of their recruiting process
+People who have their own system, but find it tedious and time consuming — would rather focus on discovering and executing recruitment steps rather than busy bookkeeping
+Our product needs to fulfill this core role by tracking their todos and placing it front-and-center
+Optionally, gamifying the process and including statistics, aggregated information, and progress can encourage an otherwise difficult, sometimes blind, journey
+Alternatively, people who don’t have their own system and need to outsource to something that will get them up and running: easy-to-navigate and understand → reduce complexity in both design and functionality
+Empirical/Technical
+The overall design is simple, avoiding flashy features like excessive statistics and focusing more on functionality page by page.
+As well, each page’s responsibility is clearly defined, but connections between them can still be made
+Main homepage can be the only page a user visits each day to see to-dos, get a time-based idea of upcoming events, and view their overall progress to the right (which is off to the side, people look left → right, top → down) if they wish.
+Potential design: make statistics viewable or not viewable, but always accessible via profile → my stats
+Bottom graph could show weekly progress in terms of tasks completed, applications sent, coffee chats (customizable)
+To-dos can also be seen in the internship pipeline so users can mentally connect tasks to companies, but they aren’t in the forefront of the table, which aims to instead help users gain a comprehensive view of their recruiting process
+This is useful for all users, regardless of whether they are targeting specific companies or if they are mass applying to internships/jobs because it integrates what most people use spreadsheets for into the dashboard
+Design choice: the pipeline also has a statistical summary of the user’s applications as a bar at the top. This bar is nonintrusive (small legend) and doesn’t take away from the overall focus, but it adds summarization and color to the overall design.
+Next actions can also be seen in the company touchpoints to remind users, but the “companies” page focuses more on providing a summary of recent interactions, connections, and overall recruiting process with a certain company. The goal of the companies page is to aggregate overall info if a user has more connections to a certain company vs. mass applying.
+Design choice: company info comes up on the side rather than filling the whole screen, providing for a more smooth flow. Potentially have a default touchpoint company appear as the first one in the table
+Design choice: users can favorite companies they’re hard targeting, especially for people who are doing intense recruiting for particular companies (with whom they may have a lot of connections w/)
+Potential sorting: sort companies by default by earliest next action
+The resume page is separate from next actions because the page aims to give users a storage log of different resume versions they’ve used, not a next-action agenda item. Users can set a default resume that is attached to the pipeline row automatically, add new resumes, and view/edit a selected resume.
+Design choice: initially considered filtering resumes, but decided that most people likely won’t have enough resume versions to justify filtering, especially by job type. Users likely will be targeting only 2-3 job types, and the design assumes they name those accordingly for their own benefit. As well, adding an additional tag would be more work for the user to upload the resume, rather than just classifying at the naming convention.
+Potential addition: filter by number of applications this resume used, or by recency, but with a small set of data, such filtering is likely not needed
+Design choice: A gallery view is more visually appealing and takes up more space on the screen rather than a table view. This also brings diversity to the overall design, so users don’t get tired of one layout.
+Design choice: There are two avenues to add a new resume: a button on the upper right corner, and a larger empty box immediately following the last resume. If a user has many resumes that scroll past the initial gallery view, the button provides a quick and easy way to add another resume. Otherwise, it becomes intuitive to add a new resume after scanning through existing ones
+

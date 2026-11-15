@@ -1,0 +1,16 @@
+# Secrets: never commit. .env.example (placeholders only) is committed.
+.env
+.env*.local
+
+# Dependencies and build output
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local tool and OS files
+.claude/
+.vercel/
+.DS_Store
+*.log

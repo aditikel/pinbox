@@ -1,0 +1,27 @@
+/* Home: DAILY AGENDA, UPCOMING, YOUR 2026. Positions from the preview's 1280x832 canvas. */
+.ag{position:absolute;left:305px;top:110px;width:660px;height:440px}
+.ag-list{position:absolute;left:0;top:68px;width:672px;height:372px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--or) var(--gbd)}
+.ag-list::-webkit-scrollbar{width:8px}.ag-list::-webkit-scrollbar-thumb{background:var(--or);border-radius:4px}.ag-list::-webkit-scrollbar-track{background:var(--gbd);border-radius:4px}
+.blk{position:relative;width:660px;background:var(--pn);border-radius:10px}
+.ag-head{position:absolute;top:0;height:60px}
+.ag-head span{position:absolute;top:15px;font:600 26px/32px 'Chakra Petch';color:var(--ac)}
+.ag-list .blk{height:70px;margin-bottom:8px}.ag-list .blk:last-child{margin-bottom:0}
+.tk form{display:contents}
+.tk .cb{position:absolute;left:12px;top:19px;width:19px;height:19px;border:3px solid var(--ac);background:none;border-radius:4px;padding:0}
+.tk .cb:hover,.tk .cb:focus-visible{background:color-mix(in srgb,var(--ac) 45%,transparent)}
+.tk .tt{position:absolute;left:40px;top:12px;width:295px;font:400 19px/24px Mulish;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk .su{position:absolute;left:40px;top:38px;width:295px;font:400 12px/14px Mulish;color:var(--ac);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk .pr{position:absolute;left:345px;top:12px;height:26px;width:130px;border-radius:13px;text-align:center;font:400 14px/26px Mulish}
+.pr.high{background:var(--pr-h-bg);color:var(--pr-h-t)}.pr.med{background:var(--pr-m-bg);color:var(--pr-m-t)}.pr.low{background:var(--pr-l-bg);color:var(--pr-l-t)}
+.tk .du{position:absolute;left:555px;top:15px;font:400 20px/26px Mulish;color:var(--or)}.tk .du.late{color:var(--ro)}
+.found{position:absolute;left:305px;top:22px;font:400 13px Mulish;color:var(--chipt)}
+
+.up{position:absolute;left:322px;height:43px}.up .dt{position:absolute;left:0;top:0;width:130px;height:43px;border-radius:7px;background:var(--dtb)}
+.up .d1{position:absolute;left:11px;top:6px;font:400 11.5px/14px Mulish}.up .d2{position:absolute;left:11px;top:22px;font:800 14px/16px Mulish;color:var(--dtt)}
+.up .e1{position:absolute;left:147px;top:2px;font:800 15px/18px Mulish;color:var(--tx);white-space:nowrap}.up .e2{position:absolute;left:147px;top:22px;font:400 12px/16px Mulish;white-space:nowrap}
+
+.lgd{position:absolute;left:979px;width:262px;font:400 13px/16px Mulish;color:var(--tx)}.lgd i{position:absolute;left:5px;top:3px;width:10px;height:10px;border-radius:50%}.lgd s{position:absolute;left:18px;text-decoration:none}.lgd b{position:absolute;right:52px;font-weight:400}
+.tile{position:absolute;top:478px;width:123px;height:100px;border-radius:10px;background:var(--tile)}
+.tile .ti-ic{position:absolute;left:13px;top:10px;width:22px;height:22px}
+.tile .ti-n{position:absolute;left:0;top:25px;width:123px;text-align:center;font:800 36px/42px Mulish;color:var(--tilet);padding-left:20px}
+.tile .ti-l{position:absolute;left:0;top:76px;width:123px;text-align:center;font:400 13px/16px Mulish;color:#c9c0c2}

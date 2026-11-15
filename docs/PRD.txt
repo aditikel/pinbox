@@ -1,0 +1,228 @@
+OVERVIEW
+Our product is a dashboard connected to Gmail and Google Calendar that turns a student's recruiting inbox into one list of applications and the actions each one needs today.
+Problem: Students in active recruiting apply to dozens or hundreds of roles. Each application spawns emails like confirmations, OAs, interview scheduling, rejections, offers, and coffee chat invites. These are scattered across Gmail and Google Calendar, which are poor at showing status or deadlines across many companies, so students miss OA deadlines, forget to reply to scheduling emails, and lose track of who they talked to.
+
+
+VALUE PROPOSITION
+For students juggling dozens to hundreds of applications, our product turns a messy inbox into one dashboard that says exactly what needs attention today, with no system to build yourself.
+Actionability: a Today view of deadlines and replies needed, ranked by urgency, instead of a static record of statuses.
+Centralization: every application, email, interview, and coffee chat for a company in one place, populated automatically from Gmail.
+Lower effort needed: the dashboard does the organizing, so staying on top of recruiting no longer depends on manual entry and switching between many tabs and websites. 
+
+
+TARGET USER PERSONA (SEGMENT FURTHER)
+Employment Fein - Sophomore or upperclassmen recruiting for finance, consulting, tech, etc. who has applied to hundreds of jobs but doesn’t have much of a system, maybe just a spreadsheet. They have a bunch of OAs to do, have quite a few coffee chats to set up, but the sheer volume is just making it hard to keep up. The automatic sync with Gmail and today’s to-do list is a game changer for them
+Academic Weapon - Someone recruiting who may be a little more organized or who hasn’t applied to quite as many jobs who has a bit of a system going for them but they already don’t have a lot of time and manually re-updating their system is tedious. Our CSV import is important for them
+Newbies - Freshman who might just be starting to recruit so barely knows what a good system looks like but wants to start off strong. The centralized dashboard for everything they need is a great value proposition for them. 
+
+
+
+
+USER JOURNEY
+The journey follows Maya, an Employment Fein: a junior recruiting for consulting and tech with about 120 applications out and not really using anything to track them
+
+Stage
+What Maya Does
+What the Product Does
+Sign up
+Hears about the app from Demo Day and clicks sign up with Google
+Shows a short panel on what we read and store, then one Google consent screen for read-only Gmail and Calendar
+Loads App
+Waits a bit
+Backfills 90 days of email and the next 30 days of calendar events, shows progress ("Found 84 applications"), and opens on Today Tab
+Cleans it Up
+Scans the Pipeline and spots a club newsletter logged as an application, two duplicate Deloitte rows, and a wrong role title
+In edit mode she deletes the newsletter, deletes one of the Deloitte rows or merges them, and fixes the title. Her edits stick through future syncs
+Daily Check
+Opens the Today tab
+Shows 1 due today and 3 due tomorrow: a HireVue OA due tonight, a scheduling reply to Bain, and a thank-you note
+Act
+Clicks the OA, opens the email in Gmail, finishes it and marks it Done
+Clears the item and moves the status to OA
+Network
+Has a coffee chat with a McKinsey consultant before applications open
+The chat comes in from her calendar invite. McKinsey shows as Networking, and a week before her expected open date Today suggests asking for a referral
+Rejection
+Gets a rejection from Goldman
+Changes the status to Rejected quietly. Nothing lands on Today and no alert fires
+Interview and Offer
+Gets a final-round invite, then an offer with a deadline
+Puts the interview from her calendar on Today with a prep reminder the day before, adds "Send thank-you" once it ends, and "Respond by Nov 20" for the offer
+Wrap Up
+Accepts an offer and stops recruiting
+Lets her export to CSV or delete everything
+
+
+The other personas enter a little differently. An Academic Weapon imports their spreadsheet at stage 2 before the backfill fills in the gaps. A Newbie's backfill finds little so they don’t see much populated data
+
+HOW IT WORKS
+Users sign in with Google once. The app backfills their recent inbox, then keeps the dashboard current as new emails arrive.
+
+Ingestion
+• Sign-in: Google sign-in through Supabase with read-only Gmail and Calendar scopes, so signing in and connecting both is one step.
+Backfill: on first connect, scan the last 90 days (adjustable) so the dashboard is already full on first open if they’ve been recruiting.
+Pre-filter: a Gmail search pulls only likely recruiting emails before any LLM call, for example ATS senders (greenhouse.io, lever.co, myworkday.com) and subjects like "thank you for applying," "assessment," or "interview."
+Ongoing sync: check for new emails on a schedule.
+CSV import and manual entry: map columns from an existing spreadsheet, and add or edit anything email misses.
+Classification
+An LLM labels each filtered email and extracts structured fields.
+
+Company matching: a lot of emails come from ATS no-reply addresses, so company and role are read from the email body, then matched to existing applications to avoid duplicates.
+• Fixing mistakes: there is no review queue. Results go straight to the dashboard, and users correct or delete anything in edit mode. Edits stick through later syncs.
+
+Dashboard
+Today's view: what actions need to be done, sorted by due date: OAs to complete, scheduling replies, offer deadlines, thank-you notes, and coffee-chat follow-ups.
+Pipeline view: a table with one row per application. Users add, hide, and reorder columns such as status, date applied, last activity, next action, and resume.
+Company page: a timeline of every email, interview, and touchpoint for that company, plus the resume used.
+Touchpoints: coffee chats and recruiter calls live under the company or application.They are detected from email or added manually. 
+A company can also be tracked before its application opens: it shows in the Pipeline with status Networking, its touchpoints carry over once you apply, and when the role opens the Today view can prompt "Ask [contact] for a referral."
+Resume versions: manual uploads to a resume library. A version can be attached to an application; otherwise the user's default resume applies (if available). This covers tailored resumes and keeps a record after the resume changes.
+
+
+
+
+
+
+VISUAL
+Today: an urgency-ranked action list showing the item, company, and due date, with one-tap Done, Snooze, and Open email. Header counts show overdue, due today, and due this week.
+Pipeline: the customizable table with status dropdowns and filters. A kanban view by status is a stretch.
+Company page: a header (company, role, status, resume) over a vertical timeline of emails, interviews, and touchpoints.
+Edit mode: a toggle on the Pipeline and Company page that makes every field editable inline, with delete, merge, and undo
+
+
+Also needed: onboarding (Sign in with Google, backfill progress, first dashboard).
+
+
+FEATURE REQUIREMENTS
+Onboarding
+Sign in with Google through Supabase, requesting read-only Gmail, read-only Calendar, and offline access in the same consent step
+Before the Google screen, a short panel says what we read (emails and calendar events matching the recruiting filter), what we store (extracted fields and a thread link), and what we never store (email bodies)
+Button to backfill by 90 days if user wants to
+Ingestion
+Pre-filter with a Gmail search (ATS sender domains plus subject keywords) before any LLM call
+Emails outside the filter are never fetched in full or sent to the LLM
+Classify each filtered email into a category from the Classification table, or Not recruiting, and extract fields as JSON with a confidence score (preferably pretty high)
+Read company and role from the email body when the sender is an ATS no-reply address, and match to existing applications by normalized company name and role
+No duplicate applications for the same company and role in the test set
+Sync new emails when the dashboard loads
+Scheduled sync every 30 minutes (doesn’t have to be exact)
+Google Calendar - Calendar access is read-only in the MVP. It fills in what email misses: interviews booked through scheduling tools, and coffee chats that never produce a recruiting email.
+Read events from 90 days back to 30 days ahead with the read-only Calendar scope, through the calendar filter (recruiting words in the title, a scheduling-tool organizer, or an attendee from a tracked company)
+Events outside the filter are never stored or sent to the LLM
+Match interview events to applications by attendee or organizer domain, or company name in the title, and record the round and time.
+If interview is with no matching application create a new one in Dashboard
+Turn coffee-chat and recruiter-call events into touchpoints with person and date
+Detected chats appear on the company timeline
+Rescheduled or cancelled events update or remove the interview on the next sync
+Not as necessary but would be nice
+Edit mode
+An Edit toggle on the Pipeline and Company page makes every field editable inline: company, role, status, dates, next action
+Delete an application, event, or touchpoint, with an optionable undo. Deleting an email-derived item, or marking it Not recruiting, adds its Gmail thread or calendar event to an ignore list
+A deleted item never comes back on a later sync
+Merge two applications into one, keeping all events and touchpoints
+Merged row shows the combined timeline; the other row is gone
+User edits win. A field the user edited is locked from automatic updates, though new events still attach to the application
+Today Tab View
+List open actions by due date, overdue first, with header counts for overdue, due today, and due this week
+Create actions automatically: Complete OA, Reply with availability, Send thank-you (due 24 hours after the interview ends, using the calendar time when there is one), and Respond to offer
+Each action has Done, Snooze (1 day, 3 days, or a date), and Open email, which opens the Gmail thread
+Rejections never create actions or alerts. They only change the application's status
+Users can add their own to-dos to any application
+Upcoming interviews and coffee chats from Calendar show on Today, with a "Prep for [company]" action due the day before
+Pipeline View
+Table with one row per application. Default columns: company, role, status, date applied, last activity, next action
+Every application from sync, import, or manual entry has a row (try to detect if sync, import, and manual creates duplicates and merge them automatically)
+Sort and filter by status, company, and date
+Status values: Networking, Applied, OA, Interviewing, Offer, Rejected, Withdrawn, changeable from a dropdown
+Add, hide, and reorder columns, saved per user
+Company Page
+Header with company, role, status, and resume used
+Timeline of every event and touchpoint, newest first. Each auto-created item links to its source Gmail thread or calendar event
+More than one application under a company (two roles at Google) shown separately
+Networking and Touchpoints 
+Add a touchpoint (person, their role, date, notes) to a company or application
+Touchpoint shows on the company timeline
+Detect coffee chats and recruiter calls from email, such as "great chatting" threads
+Track a company before its application opens, with status Networking. Its touchpoints carry over when an application is created
+Creating the application keeps all earlier touchpoints
+CSV Import and Manual Entry
+Add an application or company by hand with any fields
+Manual entries behave like synced ones in every view
+Upload a CSV, map its columns to our fields, and preview before importing
+Importing a sheet after a backfill creates no duplicates
+Resume Versions
+Upload PDF resumes to a library with a label, and mark one as the default
+Attach a version to an application; otherwise the default applies
+Privacy and Data Controls
+Store extracted fields and the Gmail thread ID only. Never store email bodies, event descriptions, or calendar events outside the filter, and never log LLM inputs
+The database has no email body column; logs contain no email text
+Send only pre-filtered emails and event metadata (title, time, organizer, attendee domains) to the LLM, trimmed of quoted reply chains, through an API setting that doesn't retain or train on inputs
+A Delete my data button removes every record, resume, and stored Google token, and revokes Gmail and Calendar access
+Export all applications, events, and touchpoints to CSV
+Export opens cleanly in Google Sheets
+Never extract compensation, offer terms, or interviewer feedback. For offers, only the response deadline
+Supabase row-level security on every table, and Google tokens encrypted at rest
+
+SUPPORTING RESEARCH (PRIMARY AND SECONDARY)
+https://docs.google.com/forms/d/1ognyanpvIbmTnp5JZ-LzLx65JUCWR3aL_xgTcAReIes/edit
+Can use some more secondary if we want
+
+
+ASSUMPTIONS
+For our personas, managing applications after submitting is a pretty big pain
+Enough of recruiting happens over email that Gmail captures most of it. Texts, Handshake in-app messages, and portal-only updates might be missed.
+An LLM can classify recruiting emails accurately enough (target 90% or better) that the review queue stays short.
+Students will grant read-only inbox access when data handling is explained clearly.
+A Today view changes behavior: users act on deadlines sooner than they do with Gmail alone.
+Resume tracking matters mainly to students who tailor resumes, so manual upload is enough.
+
+RISKS
+Setup friction
+Students hesitate to grant inbox access
+Duplicate or mismatched applications from ATS no-reply senders
+Calendar matching pulls in personal events or misses interviews from companies not yet tracked
+
+FEASIBILITY
+I think should be pretty feasible, no need for Composio
+
+
+
+
+
+
+
+
+TECH STACK (What Claude Recommends)
+
+Layer
+Choice
+Notes
+Frontend
+Next.js on Vercel
+React works too
+Auth, database, file storage
+Supabase
+Google sign-in with the read-only Gmail scope and offline access; Postgres for data; Storage for resumes
+Gmail access
+Gmail and Calendar APIs directly
+No Composio; uses the user's Google token from Supabase
+Classification
+LLM API with structured JSON output
+Runs only on pre-filtered emails
+Sync
+Scheduled Supabase Edge Function
+Sync on page load is P0; the 30-minute schedule is P1
+Google Cloud
+One project, Gmail and Calendar APIs enabled
+OAuth consent screen in Testing; teammates added as test users
+
+
+
+Data model
+• Company has zero or more Applications.
+• Application: role, status, date applied, resume version, source (email, CSV, or manual), and which fields the user has edited, so sync leaves them alone.
+• Event: an item from an email or calendar event on an application, with category, date, extracted fields, and a link to the Gmail thread or calendar event. Email bodies and event descriptions are not stored.
+• Action: a to-do with a due date, and done or snoozed state, linked to an application.
+• Touchpoint: a coffee chat or call with person, date, and notes, linked to a company (even one with no application yet) or to an application.
+• ResumeVersion: file, label, and upload date.
+• IgnoredItem: a Gmail thread or calendar event ID the user deleted or marked Not recruiting, so sync skips it.

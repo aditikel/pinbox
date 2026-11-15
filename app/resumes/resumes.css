@@ -1,0 +1,62 @@
+/* Resumes gallery + detail. Positions from the preview's 1280x832 canvas. */
+:root{--rc:#281d25;--rct:#362730;--rcn:#20171e;--ph-bg:#30232d;--sh:#3a3034}
+:root[data-theme="light"]{--rc:#f6eae6;--rct:#e8d3d1;--rcn:#ecd9d6;--ph-bg:#eadbd8;--sh:#cfc4c0}
+
+.rs-up{left:1064px;top:117px;width:183px;height:44px;border-radius:22px;font:800 16px/44px Mulish}
+.rs-h{left:283px;top:185px;font:600 20px/24px 'Chakra Petch';color:var(--ti)}
+.rs-status{position:absolute;left:520px;top:188px;width:727px;margin:0;text-align:right;font:400 13px Mulish;color:var(--or)}
+.rs-status code{font-size:12px}
+
+.rs-gal{left:283px;top:229px;width:960px;height:590px;padding-top:10px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--or) var(--gbd)}
+.rs-gal::-webkit-scrollbar{width:8px}.rs-gal::-webkit-scrollbar-thumb{background:var(--or);border-radius:4px}.rs-gal::-webkit-scrollbar-track{background:var(--gbd);border-radius:4px}
+
+.rcd{position:absolute;width:303px;height:228px;border:1px solid var(--ac);border-radius:10px;background:var(--rc);overflow:visible}
+.rcd.def{border-color:var(--or)}
+.rcd-link{position:absolute;inset:0;z-index:1;border-radius:10px}
+.rcd-link:focus-visible{outline:2px solid var(--or);outline-offset:2px}
+.rcd .tp{position:absolute;left:0;top:0;width:100%;height:161px;background:var(--rct);border-radius:10px 10px 0 0}
+.rcd .pg{position:absolute;left:68px;top:5px;width:164px;height:156px;background:#f8f0e8;border-radius:4px 4px 0 0;overflow:hidden}
+.rcd .pg b{position:absolute;left:13px;top:12px;max-width:140px;overflow:hidden;white-space:nowrap;font:800 11px/13px Mulish;color:#2b2628}
+.rcd .pg i{position:absolute;left:13px;height:4px;border-radius:2px;background:#b9b0b0}
+.rcd .nm{position:absolute;left:14px;top:171px;max-width:275px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 16px/20px Mulish;color:var(--ti)}
+.rcd .m1{position:absolute;left:14px;top:199px;font:400 12px/14px Mulish;color:var(--chipt)}
+.rcd .m2{position:absolute;right:16px;top:200px;font:400 11px/14px Mulish;color:var(--chipt)}
+.rcd .mn{position:absolute;left:10px;top:10px;width:34px;height:31px;border-radius:8px;border:0;background:var(--rcn);color:var(--ac);font:700 14px/1 Mulish;letter-spacing:1px;padding:0 0 6px;z-index:3}
+.rcd .df{position:absolute;right:14px;top:9px;height:24px;border-radius:12px;background:var(--or);color:#fff;font:700 10px/24px Mulish;padding:0 13px;z-index:2}
+.rs-menu{position:absolute;left:10px;top:46px;z-index:4;min-width:140px;padding:6px;border-radius:10px;background:var(--pn);border:1px solid var(--ac);box-shadow:0 8px 24px #0006;display:grid}
+.rs-menu button,.rs-menu a{border:0;background:none;text-align:left;padding:7px 10px;border-radius:6px;font:400 13px Mulish;color:var(--tx);text-decoration:none}
+.rs-menu button:hover,.rs-menu a:hover{background:var(--hl)}
+.rs-menu .danger{color:var(--ro)}
+
+.rcd-add{position:absolute;width:303px;height:228px;border:1px dashed var(--ac);border-radius:10px;background:var(--rc);padding:0;color:var(--ti)}
+.rcd-add:disabled{opacity:.5;cursor:not-allowed}
+.rcd-add .plus{position:absolute;left:121px;top:54px;width:60px;height:60px;border-radius:50%;background:#4a2f3b;color:#fff;font:300 40px/56px Mulish;text-align:center}
+.rcd-add .t1{position:absolute;left:0;width:100%;top:134px;text-align:center;font:700 17px/22px Mulish}
+.rcd-add .t2{position:absolute;left:0;width:100%;top:168px;text-align:center;font:400 12px/16px Mulish;color:var(--chipt)}
+
+/* Detail */
+.rd-back{left:283px;top:21px;font:400 13px/18px Mulish;color:var(--chipt);text-decoration:none}
+.rd-title{left:283px;top:42px;display:flex;align-items:center;gap:10px;white-space:nowrap;max-width:780px}
+.rd-title h1{position:static;font-size:44px;line-height:46px;overflow:hidden;text-overflow:ellipsis}
+.rd-title input{font:400 40px/46px 'Chakra Petch';width:560px;background:var(--pn2);border:1px solid var(--ac);border-radius:8px;color:var(--ti);padding:0 10px}
+.rd-pen{width:22px;height:22px;flex:none;border:0;background:none;padding:0;color:var(--ti)}
+.rd-upd{font:400 18px/22px Mulish;color:var(--ti);margin-left:6px}
+.rd-dl{left:1084px;top:40px;width:164px;height:42px;border-radius:21px;font:800 15px/42px Mulish;display:flex;align-items:center;justify-content:center;gap:8px}
+.rd-dl svg{width:20px;height:20px}
+.rd-def{left:283px;top:94px;font:400 12px Mulish;color:var(--chipt);display:flex;gap:10px;align-items:center}
+.rd-def .df{height:20px;border-radius:10px;background:var(--or);color:#fff;font:700 10px/20px Mulish;padding:0 10px}
+.rd-def button{border:0;background:none;color:var(--ac);font:600 12px Mulish;padding:0;text-decoration:underline}
+.rd-del{color:var(--ro)!important}
+.rd-prev{left:283px;top:121px;width:565px;height:679px;border:1px solid var(--ph-bg);border-radius:12px;background:var(--pn);overflow:hidden}
+.rd-prev-h{position:absolute;left:0;top:0;width:100%;height:54px;background:var(--ph-bg);border-bottom:1px solid #4a2f3b;font:700 14px/54px Mulish;color:var(--ti);padding-left:20px}
+.rd-prev iframe{position:absolute;left:0;top:54px;width:100%;height:calc(100% - 54px);border:0;background:#525659}
+.rd-apps{left:867px;top:122px;width:381px;height:439px;border:1px solid var(--ac);border-radius:12px;background:var(--pn)}
+.rd-apps-h{left:886px;top:140px;width:220px;font:700 17px/25px 'Chakra Petch';color:var(--ti);white-space:normal}
+.rd-total{left:1132px;top:148px;width:96px;height:25px;border-radius:13px;background:#543543;text-align:center;font:800 12px/25px Mulish;color:#feffdc}
+.rd-rule{left:886px;top:197px;width:342px;height:2px;background:var(--or)}
+.rd-list{left:884px;top:258px;width:360px;height:284px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--or) var(--gbd)}
+.ap{position:relative;width:327px;height:52px;margin:3px 0 5px;border-radius:6px;background:#30232c}
+:root[data-theme="light"] .ap{background:#ecd9d6}
+.ap b{position:absolute;left:11px;top:8px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 13px/16px Mulish;color:var(--ti)}
+.ap span.r2{position:absolute;left:11px;top:27px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:400 11px/14px Mulish;color:var(--chipt)}
+.ap .stt{position:absolute;right:8px;top:18px}
