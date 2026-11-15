@@ -1,101 +1,102 @@
-company,role,status,next action,deadline,date applied
-Google,Design Engineering Intern,Interview,prep for final round,2026-12-15,2026-10-08
-Intuit,Software Engineering Intern,Applied,follow up on application,2026-12-04,2026-10-16
-Robinhood,Product Design Intern,Applied,check application portal,2026-11-19,2026-09-18
-OpenTable,"Data Science Intern (Chicago, IL)",Offer,compare offers,2026-11-24,2026-11-11
-Dropbox,Frontend Engineering Intern,Interview,practice case interview,2026-12-04,2026-10-18
-Brex,Design Engineering Intern,Rejected,,,2026-11-08
-DoorDash,Product Manager Intern,Interview,prep portfolio walkthrough,2026-11-28,2026-10-30
-Adobe,"Technology Analyst Intern (New York, NY)",Applied,tailor resume for role,2026-12-03,2026-11-08
-Figma,Product Design Intern,OA,complete online assessment,2026-11-17,2026-11-13
-Zillow,"Design Engineering Intern (Austin, TX)",Rejected,,,2026-08-14
-Pinterest,Marketing Intern,Applied,,,2026-10-16
-Expedia,Technology Analyst Intern,Rejected,,,2026-09-02
-Zillow,UX Research Intern,Rejected,,,2026-11-14
-JPMorgan Chase,Machine Learning Intern,Networking,send coffee chat request,2026-11-29,
-Yelp,Machine Learning Intern,Applied,check application portal,2026-12-11,2026-09-14
-Calendly,Software Engineering Intern,Interview,prep portfolio walkthrough,2026-12-11,2026-11-07
-Uber,Product Manager Intern,OA,complete HireVue,2026-11-16,2026-08-05
-JPMorgan Chase,"Data Science Intern (Austin, TX)",Applied,tailor resume for role,2026-12-11,2026-08-05
-Databricks,"Investment Banking Summer Analyst (New York, NY)",Interview,send thank-you note,2026-12-16,2026-08-18
-SpaceX,"Technology Analyst Intern (Austin, TX)",Offer,negotiate relocation,2026-11-23,2026-11-08
-Rivian,Machine Learning Intern,Interview,prep for final round,2026-11-22,2026-10-16
-Meta,Product Design Intern,Applied,follow up on application,2026-12-01,2026-09-10
-Expedia,Design Engineering Intern,Rejected,,,2026-09-11
-Pinterest,"Design Engineering Intern (Boston, MA)",OA,complete online assessment,2026-12-02,2026-10-06
-Lyft,Design Engineering Intern,Applied,,,2026-10-23
-JPMorgan Chase,Marketing Intern,Interview,send thank-you note,2026-11-26,2026-11-04
-Tesla,Investment Banking Summer Analyst,OA,finish design exercise,2026-11-26,2026-10-23
-Notion,Business Analyst Intern,Rejected,,,2026-09-09
-SpaceX,Product Manager Intern,Offer,compare offers,2026-11-28,2026-08-10
-Robinhood,Data Science Intern,Applied,ask contact for referral,2026-11-21,2026-10-28
-Bain & Company,"Machine Learning Intern (Boston, MA)",OA,complete online assessment,2026-11-25,2026-09-25
-Tesla,Product Manager Intern,Interview,prep for round 1,2026-12-06,2026-10-27
-Intuit,Business Analyst Intern,Withdrawn,,,2026-10-30
-Etsy,"Software Engineering Intern (Seattle, WA)",Interview,send thank-you note,2026-12-01,2026-10-08
-Nvidia,Business Analyst Intern,Rejected,,,2026-10-07
-OpenTable,Design Engineering Intern,Interview,send thank-you note,2026-11-27,2026-09-10
-Duolingo,UX Design Intern,Networking,send coffee chat request,2026-12-12,
-Lyft,Frontend Engineering Intern,Networking,send coffee chat request,2026-12-14,
-Twitch,UX Research Intern,Applied,follow up on application,2026-11-22,2026-10-03
-Grammarly,Investment Banking Summer Analyst,Networking,send coffee chat request,2026-12-05,
-Palantir,"Data Science Intern (Mountain View, CA)",Rejected,,,2026-10-08
-Roblox,UX Design Intern,Rejected,,,2026-11-10
-Adobe,Associate Product Manager Intern,Applied,,,2026-10-15
-Chime,Marketing Intern,Interview,send thank-you note,2026-12-03,2026-08-06
-Uber,Business Analyst Intern,Interview,send thank-you note,2026-11-18,2026-10-25
-Snowflake,Product Manager Intern,Interview,prep for final round,2026-12-13,2026-08-29
-Bloomberg,Strategy Intern,Applied,tailor resume for role,2026-12-05,2026-09-19
-Reddit,Investment Banking Summer Analyst,Networking,send coffee chat request,2026-12-09,
-Brex,Technology Analyst Intern,Interview,prep for round 1,2026-12-07,2026-10-25
-Instacart,"Data Science Intern (New York, NY)",Interview,schedule recruiter call,2026-11-27,2026-11-11
-Microsoft,Product Manager Intern,Applied,check application portal,2026-11-21,2026-09-29
-HubSpot,Software Engineering Intern,Applied,tailor resume for role,2026-12-11,2026-10-10
-Palantir,Business Analyst Intern,Offer,compare offers,2026-12-12,2026-08-19
-Canva,Machine Learning Intern,Networking,connect on LinkedIn,2026-12-03,
-Salesforce,Frontend Engineering Intern,Rejected,,,2026-11-04
-Square,Product Design Intern,Applied,check application portal,2026-12-01,2026-11-01
-Palantir,Design Engineering Intern,OA,finish design exercise,2026-11-21,2026-08-09
-Databricks,Product Design Intern,Rejected,,,2026-08-16
-OpenTable,Software Engineering Intern,Applied,check application portal,2026-11-28,2026-10-05
-Plaid,Investment Banking Summer Analyst,Networking,thank alum for the chat,2026-11-28,
-Microsoft,"Software Engineering Intern (Mountain View, CA)",OA,,,2026-10-30
-Canva,"Investment Banking Summer Analyst (New York, NY)",Applied,,,2026-11-09
-McKinsey & Company,Frontend Engineering Intern,OA,complete online assessment,2026-12-09,2026-08-31
-Twitch,UX Design Intern,Networking,thank alum for the chat,2026-11-20,
-Apple,Frontend Engineering Intern,Applied,,,2026-10-30
-Spotify,Product Design Intern,Applied,check application portal,2026-11-23,2026-10-27
-Cisco,"Associate Product Manager Intern (Los Angeles, CA)",Interview,send thank-you note,2026-12-12,2026-09-29
-Canva,"Design Engineering Intern (Austin, TX)",Rejected,,,2026-09-25
-Zillow,Associate Product Manager Intern,OA,,,2026-10-22
-Rivian,UX Research Intern,Rejected,,,2026-09-06
-Calendly,Product Design Intern,Rejected,,,2026-11-12
-Lyft,"Strategy Intern (Mountain View, CA)",Applied,ask contact for referral,2026-11-20,2026-11-11
-Electronic Arts,Marketing Intern,OA,complete HireVue,2026-12-04,2026-11-12
-Square,Frontend Engineering Intern,Applied,ask contact for referral,2026-12-12,2026-10-17
-Grammarly,Design Engineering Intern,Networking,ask for referral,2026-12-15,
-Loom,"Software Engineering Intern (Boston, MA)",Networking,thank alum for the chat,2026-11-18,
-Bloomberg,Associate Product Manager Intern,Interview,schedule recruiter call,2026-12-12,2026-11-13
-Meta,"UX Research Intern (Los Angeles, CA)",Withdrawn,,,2026-10-17
-Adobe,UX Research Intern,Applied,check application portal,2026-12-16,2026-11-09
-Slack,Investment Banking Summer Analyst,Rejected,,,2026-09-21
-Citadel,Machine Learning Intern,Interview,,,2026-08-25
-Microsoft,Business Analyst Intern,Offer,compare offers,2026-12-15,2026-10-11
-Deloitte,Technology Analyst Intern,Applied,tailor resume for role,2026-11-27,2026-11-11
-Grammarly,Marketing Intern,Applied,check application portal,2026-12-16,2026-08-08
-Discord,UX Research Intern,Interview,send thank-you note,2026-12-07,2026-08-17
-HubSpot,"Business Analyst Intern (Boston, MA)",Offer,,,2026-10-02
-Pinterest,Technology Analyst Intern,Interview,practice case interview,2026-11-19,2026-08-09
-Deloitte,"Strategy Intern (Los Angeles, CA)",Interview,practice case interview,2026-11-23,2026-10-08
-Etsy,UX Design Intern,Rejected,,,2026-09-25
-Etsy,Technology Analyst Intern,OA,complete HireVue,2026-11-17,2026-11-05
-Tesla,Software Engineering Intern,OA,complete HireVue,2026-11-24,2026-08-30
-Chime,Design Engineering Intern,Rejected,,,2026-08-01
-Cisco,Software Engineering Intern,Interview,prep portfolio walkthrough,2026-11-26,2026-09-11
-Ramp,Investment Banking Summer Analyst,Applied,ask contact for referral,2026-11-30,2026-10-02
-Atlassian,"Business Analyst Intern (Seattle, WA)",Interview,send thank-you note,2026-11-17,2026-10-11
-LinkedIn,Software Engineering Intern,Rejected,,,2026-10-12
-Discord,Product Manager Intern,Applied,ask contact for referral,2026-11-30,2026-10-25
-Google,UX Design Intern,Applied,ask contact for referral,2026-12-15,2026-08-27
-Workday,Product Manager Intern,Interview,prep for final round,2026-11-16,2026-08-11
-Chime,Machine Learning Intern,Applied,tailor resume for role,2026-12-02,2026-11-05
+company,role,status,next action,deadline,date applied,last touchpoint,contact,contact role,touchpoint type,referral,notes
+Figma,,Networking,send thank-you note,2026-11-17,,2026-11-12,Maya Chen,Product Designer,Coffee chat,yes,Role-less row: should merge into a Figma application if one exists
+Notion,Product Design Intern,Recruiter reached out,reply to recruiter,2026-11-16,,2026-11-14,Sam Patel,University Recruiter,Email,no,Status wording maps to Networking
+Datadog,Software Engineering Intern,Career fair,apply after career fair,2026-11-20,,2026-11-05,Priya Rao,Engineering Manager,Event,no,
+Pinterest,UX Research Intern,Networking,,,,2026-09-01,Leo Martins,UX Researcher,Coffee chat,no,"Stale touchpoint, no next action"
+Asana,Product Manager Intern,Applied (referred),follow up with referrer,2026-11-21,2026-11-07,2026-11-03,Hannah Kim,Senior PM,Call,yes,Applied wording beats referral wording
+Calendly,Design Intern,coffee chat scheduled,prep questions for chat,2026-11-15,,2026-10-26,Diego Alvarez,Design Lead,Email,no,Due today
+Amazon,Software Development Engineer Intern,OA,complete online assessment,2026-11-16,2026-11-09,,,,,,OA due tomorrow: high priority to-do
+Capital One,Technology Analyst Intern,Online Assessment,finish CodeSignal,2026-11-12,2026-11-01,,,,,,Overdue OA
+Robinhood,Software Engineering Intern,OA completed,wait for OA results,,2026-10-26,,,,,,"Completed OA, nothing due"
+Palantir,Forward Deployed Engineer Intern,HackerRank sent,complete HackerRank,2026-11-19,2026-11-13,,,,,,
+Ramp,Product Design Intern,take-home challenge,submit design exercise,2026-11-24,2026-11-10,2026-11-10,Ava Brooks,Recruiter,Email,no,Low priority to-do (9 days out)
+Plaid,Data Science Intern,OA completed,follow up on OA,2026-11-22,2026-10-21,,,,,,
+Meta,Product Design Intern,Phone screen,prep portfolio walkthrough,2026-11-18,2026-10-16,2026-11-11,Jordan Lee,Recruiter,Call,no,Phone screen maps to Interview
+Google,UX Design Intern,Final round,prep for final round,2026-11-17,2026-10-06,2026-11-13,Nina Shah,UX Lead,Call,yes,
+Goldman Sachs,Summer Analyst,Superday,practice behavioral answers,2026-11-20,2026-10-11,,,,,,
+Microsoft,Product Design Intern,Interview,send thank-you note,2026-11-15,2026-10-25,2026-11-14,Chris Wu,Design Manager,Call,no,Interview done today
+Stripe,Product Manager Intern,INTERVIEW,prep for round 2,2026-11-19,2026-10-28,,,,,,Uppercase status
+Airbnb,Design Intern,onsite,book travel for onsite,2026-11-21,2026-10-19,2026-11-09,Elena Garcia,Recruiting Coordinator,Email,no,
+Duolingo,Product Design Intern,Offer,reply to offer,2026-11-29,2026-09-26,2026-11-12,Marcus Bell,Recruiter,Call,no,
+Spotify,Product Manager Intern,offer - negotiating,ask about relocation,2026-11-18,2026-10-01,,,,,,
+Netflix,Product Design Intern,Rejected,,,2026-09-16,2026-10-31,Olivia Park,Design Recruiter,Email,no,"Rejected after interview, has touchpoint"
+Uber,Software Engineering Intern,not moving forward,,,2026-10-13,,,,,,
+Lyft,Data Science Intern,rejected,ask for feedback,2026-11-17,2026-10-18,,,,,,Rejected with a next action: must NOT become a to-do
+Snap,Product Designer Intern,ghosted,,,2026-08-12,,,,,,"Applied in August, no reply"
+Shopify,UX Design Intern,Declined offer,,,2026-09-06,,,,,,Declined offer maps to Withdrawn
+
+Wayfair,Business Analyst Intern,Withdrawn,,,2026-10-06,,,,,,
+Apple,Product Design Intern,Applied,check application portal,2026-11-25,2026-11-15,,,,,,Applied today
+Adobe,Experience Design Intern,Applied,,,,,,,,,No dates at all
+Intuit,Product Design Intern,Submitted,,,10/30/2026,,,,,,US date format
+Etsy,UX Design Intern,Applied,follow up on application,Nov 24,Oct 3,,,,,,Month-name dates without a year
+Google,Associate Product Manager Intern,Applied,ask Nina for referral,2026-11-23,2026-11-06,2026-11-06,Raj Mehta,APM,Coffee chat,no,"Second Google role, different contact"
+Google LLC,Software Engineering Intern,OA,complete online assessment,2026-11-17,2026-11-11,,,,,,"""Google LLC"" groups with Google"
+"Stripe, Inc.",Design Engineering Intern,Applied,,,2026-11-03,,,,,,Quoted comma in company; groups with Stripe
+Bain & Company,Associate Consultant Intern,Networking,sign up for info session,2026-11-19,,2026-11-08,Tom Fischer,Consultant,Event,no,
+Nestlé,Marketing Intern,Applied,,,2026-10-30,,,,,,Accented company name
+Linear,"Product Designer Intern (Growth, Onboarding & Activation — Remote, US/Canada)",Applied,,,2026-11-04,,,,,,Very long role name
+Vercel,Design Engineer Intern,Interview,prep for design systems round,2026-11-18,2026-10-27,2026-11-12,"Sofia ""Sof"" Rossi",Design Engineer,Call,yes,"She said ""great portfolio"", follow up re: next steps"
+Data Science Co,Data Science Intern,Applied,,,2026-10-24,,,,,,
+Data Science Co,"Data Science Intern (Chicago, IL)",Interview,prep case study,2026-11-20,2026-10-24,,,,,,Near-duplicate role: merges into the row above
+Apple,Product Design Intern,Applied,check application portal,2026-11-25,2026-11-15,,,,,,Exact duplicate row: skipped
+,Mystery Intern,Applied,,,,,,,,,No company: skipped
+Reddit,Product Manager Intern,Networking,follow up with recruiter,2026-12-03,,2026-09-08,Jamie Lopez,Product Manager,Coffee chat,no,
+Square,UX Design Intern,Networking,follow up with recruiter,2026-11-26,,2026-11-04,Rowan Patel,Engineer,Coffee chat,yes,
+Cisco,Machine Learning Intern,Networking,send coffee chat request,2026-12-01,,2026-11-09,Morgan Smith,Recruiter,Call,no,
+Two Sigma,Product Manager Intern,Networking,ask for referral,2026-11-16,,2026-09-05,Drew Johnson,Designer,Coffee chat,no,
+JPMorgan Chase,UX Design Intern,Networking,ask for referral,2026-12-05,,2026-11-08,Skyler Moore,Designer,Event,no,
+Okta,UX Research Intern,Networking,follow up with recruiter,2026-12-01,,,,,,,
+JPMorgan Chase,Data Science Intern,Applied,follow up on application,2026-12-05,2026-10-14,,,,,,
+Slack,Machine Learning Intern,Applied,,,2026-10-07,,,,,,
+LinkedIn,Strategy Intern,Applied,,,2026-10-09,,,,,,
+Canva,Marketing Intern,Applied,follow up on application,2026-11-23,2026-09-22,2026-09-14,Avery Davis,Recruiter,Coffee chat,no,
+LinkedIn,UX Research Intern,Applied,check application portal,2026-12-01,2026-08-30,,,,,,
+Dropbox,UX Design Intern,Applied,check application portal,2026-12-05,2026-10-11,,,,,,
+Coinbase,Data Science Intern,Applied,,,2026-08-24,,,,,,
+Atlassian,Strategy Intern,Applied,,,2026-10-09,,,,,,
+Yelp,UX Research Intern,Applied,check application portal,2026-11-24,2026-11-12,2026-11-01,Quinn Wilson,Recruiter,Call,no,
+Databricks,Software Engineering Intern,Applied,check application portal,2026-11-28,2026-09-25,2026-09-19,Avery Davis,Alum,Email,no,
+Atlassian,Business Analyst Intern,Applied,check application portal,2026-12-05,2026-09-05,,,,,,
+Peloton,Business Analyst Intern,Applied,follow up on application,2026-11-15,2026-10-16,2026-10-17,Drew Johnson,Designer,Coffee chat,no,
+Indeed,Machine Learning Intern,Applied,check application portal,2026-11-22,2026-10-22,2026-09-23,Rowan Patel,Product Manager,Email,no,
+Roblox,Marketing Intern,Applied,,,2026-08-27,,,,,,
+Coinbase,Strategy Intern,Applied,,,2026-08-07,,,,,,
+Deloitte,Business Analyst Intern,Applied,check application portal,2026-11-16,2026-09-24,,,,,,
+Deloitte,Product Design Intern,Applied,follow up on application,2026-11-19,2026-10-21,,,,,,
+Canva,UX Research Intern,Applied,follow up on application,2026-11-16,2026-08-30,2026-10-27,Rowan Patel,Recruiter,Email,yes,
+Dropbox,Software Engineering Intern,Applied,check application portal,2026-11-17,2026-08-28,,,,,,
+Peloton,Machine Learning Intern,Applied,check application portal,2026-11-16,2026-09-29,2026-09-14,Quinn Wilson,Engineer,Event,no,
+Slack,Product Manager Intern,OA,finish take-home challenge,2026-12-06,2026-11-01,2026-10-26,Rowan Patel,Recruiter,Call,no,
+Snowflake,Marketing Intern,OA,finish take-home challenge,2026-12-03,2026-11-11,,,,,,
+Roblox,Data Science Intern,OA,finish take-home challenge,2026-11-18,2026-09-09,,,,,,
+Cisco,Marketing Intern,OA,finish take-home challenge,2026-12-03,2026-09-06,2026-10-22,Morgan Smith,Engineer,Call,no,
+Brex,Strategy Intern,OA,complete online assessment,2026-11-13,2026-09-30,,,,,,
+Expedia,Data Science Intern,OA,finish take-home challenge,2026-11-27,2026-10-21,,,,,,
+DoorDash,UX Research Intern,Interview,prep for round 1,2026-11-20,2026-09-29,2026-09-16,Morgan Smith,Product Manager,Call,no,
+Miro,Machine Learning Intern,Interview,send thank-you note,2026-12-03,2026-11-14,2026-11-05,Drew Johnson,Recruiter,Event,no,
+Expedia,Product Manager Intern,Interview,prep for final round,2026-11-23,2026-09-20,2026-09-26,Quinn Wilson,Engineer,Coffee chat,no,
+Nvidia,Product Manager Intern,Interview,prep for round 1,2026-12-01,2026-11-11,,,,,,
+GitHub,Product Manager Intern,Interview,prep for final round,2026-11-28,2026-08-28,,,,,,
+Peloton,Product Manager Intern,Interview,prep for final round,2026-11-17,2026-09-05,2026-11-02,Rowan Patel,Hiring Manager,Call,no,
+Pinterest,Software Engineering Intern,Interview,prep for round 1,2026-11-21,2026-10-18,2026-09-12,Morgan Smith,Alum,Email,no,
+Chime,Business Analyst Intern,Interview,prep for round 1,2026-12-06,2026-10-29,,,,,,
+Bloomberg,Machine Learning Intern,Interview,prep for final round,2026-11-26,2026-08-02,,,,,,
+Grammarly,Product Manager Intern,Interview,prep for round 1,2026-11-29,2026-09-07,,,,,,
+Pinterest,Strategy Intern,Interview,prep for round 1,2026-12-02,2026-08-07,2026-10-27,Taylor Nguyen,Designer,Event,yes,
+Workday,Product Design Intern,Interview,prep for final round,2026-11-29,2026-10-04,,,,,,
+Expedia,UX Design Intern,Offer,reply to offer,2026-11-20,2026-09-04,2026-11-10,Jamie Lopez,Alum,Event,yes,
+Twilio,UX Design Intern,Offer,reply to offer,2026-12-02,2026-09-19,,,,,,
+Webflow,Marketing Intern,Rejected,,,2026-10-20,,,,,,
+Chime,Strategy Intern,Rejected,,,2026-09-11,,,,,,
+Rivian,Marketing Intern,Rejected,,,2026-10-20,2026-10-31,Avery Davis,Engineer,Email,yes,
+Yelp,Software Engineering Intern,Rejected,,,2026-09-21,2026-10-08,Jamie Lopez,Designer,Email,no,
+Rivian,Product Manager Intern,Rejected,,,2026-09-16,,,,,,
+Zoom,Business Analyst Intern,Rejected,,,2026-09-13,,,,,,
+Indeed,Software Engineering Intern,Rejected,,,2026-10-25,,,,,,
+Deloitte,UX Research Intern,Rejected,,,2026-09-22,,,,,,
+Slack,UX Research Intern,Rejected,,,2026-11-12,,,,,,
+Citadel,Product Design Intern,Rejected,,,2026-09-26,,,,,,
+Twitch,Marketing Intern,Rejected,,,2026-11-06,,,,,,
+Cloudflare,Software Engineering Intern,Rejected,,,2026-11-01,2026-11-10,Taylor Nguyen,Product Manager,Call,no,
+Qualtrics,Data Science Intern,Withdrawn,,,2026-09-24,,,,,,

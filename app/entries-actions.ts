@@ -2,7 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { serverClient } from "@/lib/supabase";
 import { key } from "@/lib/normalize";
-import { match, mergeCsv, type CsvRow, type MergeTarget } from "@/lib/ingest";
+import { match, mergeCsv, csvStatus, touchKind, priorityFor, type CsvRow, type MergeTarget } from "@/lib/ingest";
 import { STATUSES } from "@/lib/statuses";
 
 export type EntryState = { error?: string; ok?: number };
@@ -76,12 +76,15 @@ export async function deleteEntry(id: string) {
   refresh();
 }
 
-export type ImportState = { error?: string; added?: number; merged?: number; skipped?: number; ok?: number };
+export type ImportState = { error?: string; added?: number; merged?: number; skipped?: number; todos?: number; touchpoints?: number; note?: string; ok?: number };
 
 /**
- * CSV import: columns are matched by header name (company, role, status, next action, deadline, date applied).
+ * CSV import: columns are matched by header name (company, role, status, next action, deadline, date applied),
+ * plus optional touchpoint columns (last touchpoint, contact, contact role, touchpoint type, referral, notes).
  * Rows that match an application already in Pinbox (from the Gmail backfill or an earlier import) are merged
  * into it with mergeCsv (lib/ingest.ts) instead of being duplicated or skipped.
+ * A next action with a deadline becomes a to-do on the Daily Agenda (never for Rejected/Withdrawn), and a
+ * last-touchpoint date with a contact becomes a touchpoint on the Companies page. Neither is ever duplicated.
  */
 export async function importCsv(_: ImportState, form: FormData): Promise<ImportState> {
   const supabase = await serverClient();
@@ -93,8 +96,19 @@ export async function importCsv(_: ImportState, form: FormData): Promise<ImportS
 
   const rows = parseCsv(await file.text());
   const head = (rows.shift() ?? []).map((h) => h.toLowerCase().trim());
-  const col = (...names: string[]) => head.findIndex((h) => names.some((n) => h.includes(n)));
-  const ix = { company: col("company"), role: col("role", "position", "title"), status: col("status", "stage"), next: col("next"), deadline: col("deadline", "due"), applied: col("applied", "date") };
+  // Exact header names win over partial matches, so "contact role" never steals the "role" column.
+  const col = (...names: string[]) => {
+    const exact = head.findIndex((h) => names.includes(h));
+    if (exact >= 0) return exact;
+    const aboutContact = names.some((n) => /contact|touch|person/.test(n));
+    return head.findIndex((h) => names.some((n) => h.includes(n)) && (aboutContact || !/contact|touch/.test(h)));
+  };
+  const ix = {
+    company: col("company"), role: col("role", "position", "title"), status: col("status", "stage"), next: col("next action", "next"),
+    deadline: col("deadline", "due"), applied: col("date applied", "applied"),
+    touch: col("last touchpoint", "touchpoint", "touchpoint date"), person: col("contact", "contact name", "person"),
+    personRole: col("contact role", "contact title"), kind: col("touchpoint type", "type", "kind"), referral: col("referral", "referred"), notes: col("notes", "note"),
+  };
   if (ix.company < 0) return { error: "No “company” column found in the first row." };
 
   const { data: existing, error: readError } = await supabase.from("applications")
@@ -105,6 +119,9 @@ export async function importCsv(_: ImportState, form: FormData): Promise<ImportS
     byCompany.set(a.company_key, [...(byCompany.get(a.company_key) ?? []), a]);
   }
 
+  type Extra = { ck: string; target: { role_key: string }; company: string; row: CsvRow;
+    touch: null | { person: string; person_role: string; kind: string; happened_on: string; referral: boolean; notes: string } };
+  const extras: Extra[] = [];
   const seen = new Set<string>();
   const inserts: Record<string, unknown>[] = [];
   const updates: { id: string; u: Record<string, unknown> }[] = [];
@@ -118,11 +135,17 @@ export async function importCsv(_: ImportState, form: FormData): Promise<ImportS
     seen.add(ck + "|" + rk);
     const row: CsvRow = {
       company, role,
-      status: STATUSES.find((s) => s.toLowerCase() === get(ix.status).toLowerCase()) ?? (/interview/i.test(get(ix.status)) ? "Interview" : "Applied"),
+      status: csvStatus(get(ix.status)),
       next_action: get(ix.next) || null, deadline: toDay(get(ix.deadline)), date_applied: toDay(get(ix.applied)),
     };
+    const touchDay = toDay(get(ix.touch)), person = get(ix.person);
+    const touch = touchDay && person ? {
+      person, person_role: get(ix.personRole).slice(0, 120), kind: touchKind(get(ix.kind)), happened_on: touchDay,
+      referral: /^(y|yes|true|1|referred)$/i.test(get(ix.referral)), notes: get(ix.notes).slice(0, 2000),
+    } : null;
 
     const target = match(byCompany.get(ck) ?? [], rk);
+    extras.push({ ck, target: target ?? { role_key: rk }, company, row, touch });
     if (target) {
       const u = mergeCsv(row, target);
       Object.assign(target, u); // keeps later rows in this file merging against the latest values
@@ -153,8 +176,48 @@ export async function importCsv(_: ImportState, form: FormData): Promise<ImportS
     const { error } = await supabase.from("applications").update(u).eq("id", id);
     if (!error) merged++;
   }
+
+  // Ids for every application this file touched (new rows only get theirs from the database).
+  const { data: idRows } = await supabase.from("applications").select("id,company_key,role_key,status");
+  const appBy = new Map((idRows ?? []).map((a) => [a.company_key + "|" + a.role_key, a]));
+
+  // To-dos: one open action per application + title.
+  let todos = 0;
+  const { data: openActs } = await supabase.from("actions").select("application_id,title").eq("done", false);
+  const haveAct = new Set((openActs ?? []).map((a) => a.application_id + "|" + a.title.toLowerCase()));
+  const newActs = [];
+  for (const e of extras) {
+    const app = appBy.get(e.ck + "|" + e.target.role_key);
+    if (!app || !e.row.next_action || !e.row.deadline || ["Rejected", "Withdrawn"].includes(app.status)) continue;
+    const k = app.id + "|" + e.row.next_action.toLowerCase();
+    if (haveAct.has(k)) continue;
+    haveAct.add(k);
+    newActs.push({ user_id: user.id, application_id: app.id, title: e.row.next_action, due: e.row.deadline, priority: priorityFor(e.row.deadline) });
+  }
+  if (newActs.length) { const { error } = await supabase.from("actions").insert(newActs); if (!error) todos = newActs.length; }
+
+  // Touchpoints: skip ones already recorded (same company, person and day). Needs migration 002.
+  let touchpoints = 0, note: string | undefined;
+  const wanted = extras.filter((e) => e.touch);
+  if (wanted.length) {
+    const { data: have, error: tpReadError } = await supabase.from("touchpoints").select("company_key,person,happened_on");
+    if (tpReadError) note = "Touchpoints were skipped: run supabase/migrations/002_companies.sql first.";
+    else {
+      const seenTp = new Set((have ?? []).map((t) => `${t.company_key}|${t.person.toLowerCase()}|${t.happened_on}`));
+      const newTps = [];
+      for (const e of wanted) {
+        const k = `${e.ck}|${e.touch!.person.toLowerCase()}|${e.touch!.happened_on}`;
+        if (seenTp.has(k)) continue;
+        seenTp.add(k);
+        newTps.push({ user_id: user.id, company: e.company, company_key: e.ck, application_id: appBy.get(e.ck + "|" + e.target.role_key)?.id ?? null, ...e.touch! });
+      }
+      if (newTps.length) { const { error } = await supabase.from("touchpoints").insert(newTps); if (!error) touchpoints = newTps.length; else note = "Touchpoints couldn't be saved."; }
+    }
+  }
+
   refresh();
-  return { ok: Date.now(), added, merged, skipped: unchanged };
+  revalidatePath("/companies");
+  return { ok: Date.now(), added, merged, skipped: unchanged, todos, touchpoints, note };
 }
 
 function toDay(s: string): string | null {

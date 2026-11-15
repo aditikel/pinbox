@@ -118,7 +118,7 @@ function CsvImport() {
   const [note, setNote] = useState("");
   useEffect(() => {
     if (state.error) setNote(state.error);
-    else if (state.ok) setNote(`Imported ${state.added}${state.merged ? `, merged ${state.merged} into existing entries` : ""}${state.skipped ? `, ${state.skipped} unchanged` : ""}.`);
+    else if (state.ok) setNote(`Imported ${state.added}${state.merged ? `, merged ${state.merged} into existing entries` : ""}${state.skipped ? `, ${state.skipped} unchanged` : ""}${state.todos ? ` · ${state.todos} to-dos` : ""}${state.touchpoints ? ` · ${state.touchpoints} touchpoints` : ""}.${state.note ? ` ${state.note}` : ""}`);
     if (state.ok || state.error) { const t = setTimeout(() => setNote(""), 6000); return () => clearTimeout(t); }
   }, [state]);
   return (

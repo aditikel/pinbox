@@ -1,5 +1,6 @@
 // Pure rules for turning one classified email into database changes. No I/O here, so it can be unit tested.
 import { key } from "./normalize";
+import { STATUSES } from "./statuses";
 
 export type Category = "applied" | "oa" | "interview_invite" | "scheduling" | "offer" | "rejection" | "coffee_chat" | "not_recruiting";
 export type Classified = { category: Category; company: string; role: string; deadline: string | null; confidence: number };
@@ -41,7 +42,35 @@ export function match<T extends { role_key: string }>(apps: T[], roleKey: string
   return null;
 }
 
-// ---- CSV import merge ----
+// ---- CSV import ----
+
+/** CSV status text to a Pinbox status. Exact names first, then common wording ("OA completed", "phone screen", "ghosted"). */
+export function csvStatus(s: string): string {
+  const t = s.trim().toLowerCase();
+  const exact = STATUSES.find((x) => x.toLowerCase() === t);
+  if (exact) return exact;
+  if (/withdr|declined offer|turned down/.test(t)) return "Withdrawn";
+  if (/reject|not moving|no longer|unsuccessful|denied/.test(t)) return "Rejected";
+  if (/offer/.test(t)) return "Offer";
+  if (/interview|screen|superday|onsite|final round|round \d/.test(t)) return "Interview";
+  if (/\boa\b|assessment|hackerrank|codesignal|coding challenge|take.?home|hirevue/.test(t)) return "OA";
+  if (/appl|submitted|ghosted|no response|waiting/.test(t)) return "Applied";
+  if (/network|coffee|chat|referr|recruit|career fair|info session|reach(ed)? out/.test(t)) return "Networking";
+  return "Applied";
+}
+
+const TOUCH_KINDS = ["Coffee chat", "Call", "Email", "Event", "Other"];
+export function touchKind(s: string): string {
+  const t = s.trim().toLowerCase();
+  return TOUCH_KINDS.find((k) => k.toLowerCase() === t) ?? (/coffee|chat/.test(t) ? "Coffee chat" : /call|phone|zoom/.test(t) ? "Call" : /mail|linkedin|message/.test(t) ? "Email" : /event|fair|session|meetup/.test(t) ? "Event" : "Other");
+}
+
+/** Overdue or due within 2 days: high; within a week: med; later: low. */
+export function priorityFor(due: string, today = new Date().toISOString().slice(0, 10)): "high" | "med" | "low" {
+  const days = (Date.parse(due) - Date.parse(today)) / 864e5;
+  return days <= 2 ? "high" : days <= 7 ? "med" : "low";
+}
+
 
 export type CsvRow = { company: string; role: string; status: string; next_action: string | null; deadline: string | null; date_applied: string | null };
 export type MergeTarget = ExistingApp & { role: string; next_action: string | null; date_applied: string | null };
