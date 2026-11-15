@@ -1,5 +1,5 @@
 /* Shared by /login and /start: Figma frames "Login Page" (2102:357) and "Onboarding" (2112:449), 1280x832 canvas. */
-.ob .wv{position:absolute;left:-321px;top:-290px;width:1699.44px;height:1234px;pointer-events:none}
+.ob .wv{position:absolute;left:calc(640px - 961px * var(--sc,1));top:calc(416px - 706px * var(--sc,1));width:calc(1699.44px * var(--sc,1));height:calc(1234px * var(--sc,1));max-width:none;pointer-events:none}
 .ob .lg{position:absolute;left:113px;top:207px;width:511px;height:108px}
 .ob .t{position:absolute;margin:0;white-space:nowrap;line-height:1.2}
 .ob .btn{position:absolute;width:390px;height:41px;border:1px solid #a34558;border-radius:10px;background:#a34558;color:#feffdc;
