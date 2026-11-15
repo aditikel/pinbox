@@ -86,8 +86,9 @@ export function StartView({ google }: { google: boolean }) {
     <Stage>
       <div className="ob">
         <img className="wv" src="/figma/waves.svg" alt="" />
-        <img className="lg" src="/figma/pinbox-logo.svg" alt="Pinbox" />
-        <h1 className="t" style={{ left: 689, top: 207, font: "500 36px/1.2 var(--hd)", color: "#feffdc" }}>How would you like to begin?</h1>
+        <img className="lg lg-d" src="/figma/pinbox-logo.svg" alt="Pinbox" />
+        <img className="lg lg-l" src="/figma/pinbox-logo-light.svg" alt="Pinbox" />
+        <h1 className="t" style={{ left: 689, top: 207, font: "500 36px/1.2 var(--hd)" }}>How would you like to begin?</h1>
         {google ? (
           <>
             <button className="btn" disabled={running} onClick={() => dlg.current?.showModal()} aria-haspopup="dialog" style={{ left: 751, top: 292 }}>{running ? "backfilling…" : "backfill gmail*"}</button>
@@ -102,7 +103,7 @@ export function StartView({ google }: { google: boolean }) {
             <p className="t note" style={{ top: 346 }}>*columns: company (required), role, status, next action,<br />deadline, date applied. Sign in with Google to backfill Gmail.</p>
           </form>
         )}
-        <p className="t" style={{ left: 751, width: 390, top: 380, textAlign: "center", font: "500 36px/1.2 var(--hd)", color: "#feffdc" }}>or</p>
+        <p className="t" style={{ left: 751, width: 390, top: 380, textAlign: "center", font: "500 36px/1.2 var(--hd)" }}>or</p>
         <button className="btn" disabled={running || importing} onClick={() => router.push("/home")} style={{ left: 751, top: 436 }}>start fresh</button>
         {!google && <a className="t" href="/sample-applications.csv" download style={{ left: 751, top: 490, font: "300 15px/1.2 var(--bd)", color: "#d18951" }}>download a sample csv</a>}
         {running && (
@@ -115,17 +116,17 @@ export function StartView({ google }: { google: boolean }) {
       </div>
 
       <dialog ref={dlg} aria-labelledby="bf-title" style={box}>
-        <style>{`dialog::backdrop{background:#000a} .bf-date::-webkit-calendar-picker-indicator{filter:invert(1)}`}</style>
+        <style>{`dialog::backdrop{background:#000a} :root:not([data-theme="light"]) .bf-date::-webkit-calendar-picker-indicator{filter:invert(1)}`}</style>
         <form method="dialog" onSubmit={(e) => { e.preventDefault(); if (valid) backfill(); }} style={{ display: "grid", gap: 12 }}>
           <h2 id="bf-title" style={{ font: "500 26px Tomorrow,sans-serif", margin: 0 }}>Backfill from when?</h2>
-          <p style={{ margin: 0, fontSize: 15, opacity: 0.8 }}>Pinbox reads recruiting emails from this date up to today.</p>
+          <p style={{ margin: 0, fontSize: 15 }}>Pinbox reads recruiting emails from this date up to today.</p>
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} role="group" aria-label="Quick picks">
             {PRESETS.map(([label, n]) => {
               const d = daysAgo(n), on = d === since;
               return (
                 <button key={label} type="button" aria-pressed={on} onClick={() => setSince(d)}
-                  style={{ ...chip, background: on ? "#a34558" : "#2e2429", color: on ? "#feffdc" : "rgba(254,255,220,.6)" }}>{label}</button>
+                  style={{ ...chip, background: on ? "#a34558" : "var(--pn2)", color: on ? "#feffdc" : "var(--tx)" }}>{label}</button>
               );
             })}
           </div>
@@ -133,7 +134,7 @@ export function StartView({ google }: { google: boolean }) {
           <label style={{ display: "grid", gap: 4, color: "#e63f6b", fontSize: 14, textAlign: "left" }}>
             start date
             <input className="bf-date" type="date" required value={since} min={oldest} max={today} onChange={(e) => setSince(e.target.value)}
-              style={{ height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid #a34558", background: "#2e2429", color: "#feffdc", font: "300 16px Sunflower,sans-serif", colorScheme: "dark" }} />
+              style={{ height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid #a34558", background: "var(--pn2)", color: "var(--tx)", font: "300 16px Sunflower,sans-serif" }} />
           </label>
 
           <small style={{ color: valid ? "#e63f6b" : "#ff7575", textAlign: "left", lineHeight: 1.35 }}>
@@ -143,7 +144,7 @@ export function StartView({ google }: { google: boolean }) {
           </small>
 
           <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-            <button type="button" onClick={() => dlg.current?.close()} style={{ ...small, background: "#2e2429", color: "rgba(254,255,220,.7)" }}>cancel</button>
+            <button type="button" onClick={() => dlg.current?.close()} style={{ ...small, background: "var(--pn2)", color: "var(--tx)" }}>cancel</button>
             <button type="submit" disabled={!valid} style={{ ...small, opacity: valid ? 1 : 0.5 }}>start backfill</button>
           </div>
         </form>
@@ -151,6 +152,6 @@ export function StartView({ google }: { google: boolean }) {
     </Stage>
   );
 }
-const box: React.CSSProperties = { width: 400, padding: 24, background: "#20171e", color: "#feffdc", border: "2px solid #a34558", borderRadius: 12, fontFamily: "Sunflower,sans-serif" };
+const box: React.CSSProperties = { width: 400, padding: 24, background: "var(--pn)", color: "var(--tx)", border: "2px solid #a34558", borderRadius: 12, fontFamily: "Sunflower,sans-serif" };
 const chip: React.CSSProperties = { border: 0, borderRadius: 20, padding: "5px 14px", font: "400 14px Tomorrow,sans-serif", cursor: "pointer" };
 const small: React.CSSProperties = { height: 32, border: 0, borderRadius: 16, padding: "0 18px", background: "#a34558", color: "#feffdc", font: "300 16px Sunflower,sans-serif", cursor: "pointer" };

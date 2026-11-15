@@ -47,7 +47,8 @@ export default function Login() {
     <Stage>
       <div className="ob">
         <img className="wv" src="/figma/waves.svg" alt="" />
-        <img className="lg" src="/figma/pinbox-logo.svg" alt="Pinbox" />
+        <img className="lg lg-d" src="/figma/pinbox-logo.svg" alt="Pinbox" />
+        <img className="lg lg-l" src="/figma/pinbox-logo-light.svg" alt="Pinbox" />
         <form className="card" onSubmit={submit}>
           <div className="seg" role="group" aria-label="Log in or sign up">
             <button type="button" className={mode === "in" ? "on" : ""} aria-pressed={mode === "in"} onClick={() => setMode("in")}>log in</button>

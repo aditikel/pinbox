@@ -26,8 +26,8 @@
 .up .e1{font:700 16px/20px var(--bd);color:var(--tx)}.up .e2{font:300 13px/16px var(--bd)}
 
 /* YOUR <year> */
-.lgd{position:absolute;left:979px;width:262px;font:400 13px/16px var(--hd);color:var(--tx)}.lgd i{position:absolute;left:0;top:3px;width:10px;height:10px;border-radius:50%}.lgd s{position:absolute;left:18px;text-decoration:none}.lgd b{position:absolute;right:52px;font-weight:400;opacity:.7}
+.lgd{position:absolute;left:979px;width:262px;font:400 13px/16px var(--hd);color:var(--tx)}.lgd i{position:absolute;left:0;top:3px;width:10px;height:10px;border-radius:50%}.lgd s{position:absolute;left:18px;text-decoration:none}.lgd b{position:absolute;right:52px;font-weight:400}
 .tile{position:absolute;top:478px;height:100px;border-radius:10px;background:var(--tile)}
 .tile .ti-ic{position:absolute;left:12px;top:8px;width:24px;height:24px}
 .tile .ti-n{position:absolute;left:0;right:0;top:19px;text-align:center;font:400 40px/48px 'Tilt Warp';color:var(--tilet);padding-left:20px}
-.tile .ti-l{position:absolute;left:0;right:0;top:75px;text-align:center;font:400 13px/16px var(--hd);color:var(--tilet);opacity:.7}
+.tile .ti-l{position:absolute;left:0;right:0;top:75px;text-align:center;font:400 13px/16px var(--hd);color:var(--tilet)}
