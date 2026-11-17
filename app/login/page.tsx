@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { browserClient } from "@/lib/supabase-browser";
 import { googleOptions } from "@/lib/google-oauth";
@@ -16,6 +16,15 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   const supabase = browserClient();
+
+  // Google sign-in sets busy and leaves the page; if the user comes back with
+  // the browser's Back button, the page is restored from the back/forward cache
+  // with busy still true, which leaves both buttons disabled. Reset it.
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => { if (e.persisted) setBusy(false); };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
