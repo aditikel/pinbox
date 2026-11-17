@@ -3,8 +3,8 @@ import { key } from "./normalize";
 import { STATUSES } from "./statuses";
 
 export type Category = "applied" | "oa" | "interview_invite" | "scheduling" | "offer" | "rejection" | "coffee_chat" | "not_recruiting";
-export type Classified = { category: Category; company: string; role: string; deadline: string | null; confidence: number };
-export type ExistingApp = { id: string; role_key: string; status: string; deadline: string | null; edited_fields: string[] };
+export type Classified = { category: Category; company: string; role: string; deadline: string | null; confidence: number; event_at?: string | null };
+export type ExistingApp = { id: string; role_key: string; role?: string; status: string; deadline: string | null; edited_fields: string[] };
 
 export const MIN_CONFIDENCE = 0.6;
 export const STATUS: Record<string, string> = {
@@ -105,15 +105,53 @@ export function mergeCsv(row: CsvRow, app: MergeTarget): Record<string, unknown>
 }
 
 /**
- * apps = this user's applications at the same company_key.
- * emailDay = YYYY-MM-DD the email was received.
+ * The classifier sometimes returns an interview stage as the role ("Final Round Interview").
+ * Strip stage words; if nothing job-like is left, the email names no role.
  */
-export function plan(r: Classified, apps: ExistingApp[], emailDay: string): Plan {
+export function cleanRole(role: string): string {
+  const stage = /\b((first|second|third|final|next|1st|2nd|3rd|\d+(st|nd|rd|th)?)\s+)?((round|stage)\s*\d*\s*)?(interviews?|superday|onsite|on-site|phone screen)\b|\b(round|stage)\s+\d+\b/gi;
+  const left = role.replace(stage, " ").replace(/\s+/g, " ").replace(/^[\s\-–—:|,()]+|[\s\-–—:|,()]+$/g, "").trim();
+  return /[a-z]{3,}/i.test(left) ? left : "";
+}
+
+const FINAL_STATUSES = ["Rejected", "Withdrawn"];
+const words = (s: string) => new Set(s.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !["intern", "internship", "the", "and"].includes(w)));
+
+/**
+ * For follow-up emails (OA, interview, offer, rejection) that don't match a role exactly: pick the application they are
+ * most likely about instead of creating a new one. The company's only open application; else the one whose role shares
+ * the most words; else the only application. Returns null when it's genuinely ambiguous.
+ */
+export function followUpMatch(apps: ExistingApp[], role: string): ExistingApp | null {
+  if (!apps.length) return null;
+  const open = apps.filter((a) => !FINAL_STATUSES.includes(a.status));
+  const pool = open.length ? open : apps;
+  if (role) {
+    const w = words(role);
+    const scored = pool.map((a) => ({ a, n: [...words(a.role ?? "")].filter((x) => w.has(x)).length })).sort((x, y) => y.n - x.n);
+    if (scored[0].n > 0 && (scored.length === 1 || scored[1].n < scored[0].n)) return scored[0].a;
+  }
+  return pool.length === 1 ? pool[0] : null;
+}
+
+/**
+ * apps = this user's applications at the same company.
+ * emailDay = YYYY-MM-DD the email was received.
+ * replied = whether the student has sent a message in the thread (undefined when unknown).
+ */
+export function plan(r: Classified, apps: ExistingApp[], emailDay: string, replied?: boolean): Plan {
   if (r.category === "not_recruiting" || r.confidence < MIN_CONFIDENCE || !r.company.trim()) return { kind: "skip" };
+  // Networking needs a two-way conversation: one-off outreach (Handshake, LinkedIn, recruiter blasts) the student never answered isn't a touchpoint.
+  if (r.category === "coffee_chat" && replied === false) return { kind: "skip" };
   const next = STATUS[r.category];
   const deadline = isDate(r.deadline) && (r.category === "oa" || r.category === "offer") ? r.deadline : null;
-  const ck = key(r.company), rk = key(r.role);
-  const existing = match(apps, rk);
+  const role = cleanRole(r.role);
+  const ck = key(r.company), rk = key(role);
+  const followUp = r.category !== "applied" && r.category !== "coffee_chat";
+  let existing = match(apps, rk);
+  if (!existing && followUp) existing = followUpMatch(apps, role);
+  // A follow-up with no role at a company with several open applications: don't invent a new role-less application.
+  const ambiguous = !existing && followUp && !role && apps.length > 0;
 
   const update: Record<string, string> = {};
   if (existing) {
@@ -121,7 +159,7 @@ export function plan(r: Classified, apps: ExistingApp[], emailDay: string): Plan
     const forward = next === "Rejected" ? existing.status !== "Rejected" : RANK.indexOf(next) > RANK.indexOf(existing.status) && existing.status !== "Rejected";
     if (forward && !locked.has("status")) update.status = next;
     if (deadline && deadline !== existing.deadline && !locked.has("deadline")) update.deadline = deadline;
-    if (!existing.role_key && rk && !locked.has("role")) { update.role = r.role.trim(); update.role_key = rk; }
+    if (!existing.role_key && rk && !locked.has("role")) { update.role = role; update.role_key = rk; }
   }
 
   // Rejections never create actions. Actions only when there is a real due date.
@@ -134,8 +172,8 @@ export function plan(r: Classified, apps: ExistingApp[], emailDay: string): Plan
   return {
     kind: "apply",
     matchId: existing?.id ?? null,
-    create: existing ? null : {
-      company: r.company.trim(), company_key: ck, role: r.role.trim(), role_key: rk, status: next, deadline,
+    create: existing || ambiguous ? null : {
+      company: r.company.trim(), company_key: ck, role, role_key: rk, status: next, deadline,
       date_applied: next === "Networking" ? null : emailDay,
     },
     update,

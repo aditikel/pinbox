@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MAX_BACKFILL_DAYS, DEFAULT_BACKFILL_DAYS, daysAgo } from "@/lib/backfill";
+import { MAX_BACKFILL_DAYS, DEFAULT_BACKFILL_DAYS, MAX_THREADS, daysAgo } from "@/lib/backfill";
 import { browserClient } from "@/lib/supabase-browser";
 import { googleOptions } from "@/lib/google-oauth";
 import { importCsv, type ImportState } from "@/app/entries-actions";
@@ -139,7 +139,7 @@ export function StartView({ google }: { google: boolean }) {
 
           <small style={{ color: valid ? "#e63f6b" : "#ff7575", textAlign: "left", lineHeight: 1.35 }}>
             {valid
-              ? <>By starting, you give permission for an LLM to read recruiting emails from {pretty(since)} to today. Up to 300 threads are read; only extracted fields are saved, never email bodies.</>
+              ? <>By starting, you give permission for an LLM to read recruiting emails from {pretty(since)} to today. Up to {MAX_THREADS} threads are read; only extracted fields are saved, never email bodies.</>
               : <>Pick a date between {pretty(oldest)} and today.</>}
           </small>
 

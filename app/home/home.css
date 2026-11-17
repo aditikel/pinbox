@@ -31,3 +31,5 @@
 .tile .ti-ic{position:absolute;left:12px;top:8px;width:24px;height:24px}
 .tile .ti-n{position:absolute;left:0;right:0;top:19px;text-align:center;font:400 40px/48px 'Tilt Warp';color:var(--tilet);padding-left:20px}
 .tile .ti-l{position:absolute;left:0;right:0;top:75px;text-align:center;font:400 13px/16px var(--hd);color:var(--tilet)}
+.tk .ag-edit{position:absolute;left:624px;top:21px;width:26px;height:26px;padding:3px;border:0;background:none;color:var(--ic);cursor:pointer}
+.tk .ag-edit:hover,.tk .ag-edit:focus-visible{color:var(--ac)}

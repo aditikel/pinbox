@@ -11,11 +11,16 @@ export default async function Pipeline() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // resume_id and resumes need migration 003; fall back to the older columns until it's run.
+  // resume_id needs migration 003 and notes needs 004; fall back to the older columns until they're run.
+  // Newest first: that is the table's order (starred rows are a filter, not pinned to the top).
   const appCols = "id,company,role,status,next_action,deadline,starred,created_at";
-  const withResume = await supabase.from("applications").select(appCols + ",resume_id").order("created_at", { ascending: false });
-  const appsRes = withResume.error ? await supabase.from("applications").select(appCols).order("created_at", { ascending: false }) : withResume;
-  const apps = (appsRes.data ?? []) as Array<{ id: string; company: string; role: string; status: string; next_action: string | null; deadline: string | null; starred: boolean; resume_id?: string | null }>;
+  const load = (cols: string) => supabase.from("applications").select(cols).order("created_at", { ascending: false });
+  let notesReady = true;
+  let appsRes = await load(appCols + ",resume_id,notes");
+  if (appsRes.error) { notesReady = false; appsRes = await load(appCols + ",resume_id"); }
+  if (appsRes.error) appsRes = await load(appCols);
+  const apps = (appsRes.data ?? []) as unknown as Array<{ id: string; company: string; role: string; status: string; next_action: string | null; deadline: string | null; starred: boolean; resume_id?: string | null; notes?: string }>;
+  const google = (user.identities ?? []).some((i) => i.provider === "google");
 
   const [{ data: actions }, { data: events }, { data: resumeRows }] = await Promise.all([
     supabase.from("actions").select("application_id,title,due").eq("done", false).order("due", { ascending: true, nullsFirst: false }),
@@ -23,7 +28,6 @@ export default async function Pipeline() {
     supabase.from("resumes").select("id,label,is_default").order("uploaded_at", { ascending: false }),
   ]);
   const resumes = (resumeRows ?? []).map((r) => ({ id: r.id, label: r.label, isDefault: r.is_default }));
-  const defaultResume = resumes.find((r) => r.isDefault)?.id ?? null;
 
   // Next action / deadline: what the user typed, else the earliest open to-do. Link: the latest Gmail thread.
   const firstAction = new Map<string, { title: string; due: string | null }>();
@@ -40,14 +44,14 @@ export default async function Pipeline() {
       shownDue: a.deadline ?? act?.due ?? null,
       thread: lastThread.get(a.id) ?? null,
       resume_id: a.resume_id ?? null,
-      resumeShown: a.resume_id ?? defaultResume,
+      notes: a.notes ?? "",
     };
   });
 
   return (
     <Stage>
       <Sidebar current="pipeline" name={displayName(user)} />
-      <PipelineView rows={rows} resumes={resumes} />
+      <PipelineView rows={rows} resumes={resumes} notesReady={notesReady} google={google} />
     </Stage>
   );
 }

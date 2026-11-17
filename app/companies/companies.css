@@ -1,5 +1,5 @@
 /* Companies. Positions from the preview's 1280x832 canvas. */
-.co-warn{position:absolute;left:760px;top:104px;width:487px;margin:0;text-align:right;font:400 12px/16px Mulish;color:var(--or)}
+.co-warn{position:absolute;left:760px;top:78px;width:487px;margin:0;text-align:right;font:400 12px/16px Mulish;color:var(--or)}
 .co-warn code{font-size:11px}
 .pill:disabled{opacity:.45;cursor:not-allowed}
 
@@ -12,7 +12,8 @@
 .co-r:hover{background:var(--hl)}
 .co-pick{position:absolute;inset:0;width:100%;border:0;background:none;padding:0;z-index:1}
 .co-pick:focus-visible{outline:2px solid var(--or);outline-offset:-2px}
-.co-n{left:23px;top:18px;max-width:115px;display:flex;align-items:center;gap:5px;font:800 15px/20px Mulish;color:var(--tx);white-space:nowrap}
+.co-n{left:23px;top:18px;max-width:110px;display:flex;align-items:center;gap:5px;font:800 15px/20px Mulish;color:var(--tx);white-space:nowrap}
+.co-nt{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .co-r.on .co-n{left:20px}
 .co-fav{flex:none;width:16px;height:16px;color:var(--or)}
 .co-num{top:19px;width:24px;text-align:center;font:400 14px/20px Mulish;color:var(--tx)}
@@ -26,21 +27,28 @@
 .co-stat{top:72px;width:66px;text-align:center}.co-stat b{display:block;font:700 27px/32px 'Chakra Petch';color:var(--ti)}.co-stat span{display:block;font:400 11px/14px Mulish;color:var(--mu)}
 .co-div{top:80px;width:1px;height:40px;background:var(--gbd)}
 .co-h{left:18px;font:500 14px/18px 'Chakra Petch';color:var(--ac)}
-.co-line{left:21px;top:178px;width:2px;background:linear-gradient(#a34558,#d18951 50%,#5a8cd7);opacity:.7}
+.co-tlw{left:0;top:169px;width:331px;height:160px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--or) transparent}
+.co-line{left:21px;width:2px;background:linear-gradient(#a34558,#d18951 50%,#5a8cd7);opacity:.7}
 .co-dot{left:17px;width:8px;height:8px;border-radius:50%}
 .co-tl{left:38px;width:280px;color:inherit;text-decoration:none}
+.co-tl-b{border:0;background:none;padding:0;text-align:left;font:inherit}.co-tl-b:hover .co-tl-t{text-decoration:underline}
 a.co-tl:hover .co-tl-t{text-decoration:underline}
 .co-tl-d{font:400 11px/14px Mulish;margin-bottom:2px}
 .co-tl-t{font:800 12px/16px Mulish;color:var(--ti);overflow:hidden;text-overflow:ellipsis}
 .co-tl-s{margin-top:3px;font:400 10px/13px Mulish;color:var(--mu);overflow:hidden;text-overflow:ellipsis}
 .co-empty{left:18px;font:400 12px Mulish;color:var(--mu)}
-.co-p{left:18px;max-width:150px;overflow:hidden;text-overflow:ellipsis;font:800 12px/16px Mulish;color:var(--ti)}
-.co-pr{left:18px;max-width:150px;overflow:hidden;text-overflow:ellipsis;font:400 11px/14px Mulish;color:var(--mu)}
-.co-copy{left:176px;width:18px;height:18px;padding:0;border:0;background:none;color:var(--ti)}
+.co-cw{left:0;top:358px;width:331px;height:92px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--or) transparent}
+.co-c{position:relative;height:40px;padding-left:18px}
+.co-p{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 12px/16px Mulish;color:var(--ti)}
+.co-pr{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:400 11px/14px Mulish;color:var(--mu)}
+.co-copy{position:absolute;left:290px;top:4px;width:18px;height:18px;padding:0;border:0;background:none;color:var(--ti)}
 .co-role{top:458px;width:98px;height:49px;border-radius:8px;background:#2e2930;text-align:center}
 :root[data-theme="light"] .co-role{background:#ecd9d6}
 .co-role-n{margin:10px 6px 0;font:800 9.5px/12px Mulish;color:var(--ti);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.co-more{left:236px;top:474px;display:flex;align-items:center;gap:3px;font:800 9px/14px Mulish;color:var(--ti);text-decoration:none}
-.co-more svg{width:12px;height:12px}
+.co-pager{left:226px;top:466px;width:100px;display:flex;align-items:center;justify-content:space-between;font:800 10px/14px Mulish;color:var(--ti)}
+.co-pager button{width:22px;height:22px;padding:4px;border:0;border-radius:50%;background:var(--pn2);color:var(--ti)}
+.co-pager button:first-child svg{transform:scaleX(-1)}
+.co-pager button:hover{color:var(--or)}
+.co-edit-row{display:flex;gap:6px}.co-edit-row input{flex:1;min-width:0}
 .tp-check{display:flex!important;align-items:center;gap:8px;margin-bottom:10px}
 .shell dialog .tp-check input{width:auto;height:auto;margin:0}

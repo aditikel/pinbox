@@ -22,9 +22,7 @@ export default async function Resume({ params }: { params: Promise<{ id: string 
   const [view, download, apps] = await Promise.all([
     bucket.createSignedUrl(r.storage_path, 3600),
     bucket.createSignedUrl(r.storage_path, 3600, { download: `${r.label.replace(/[^\w .-]/g, "")}.pdf` }),
-    r.is_default
-      ? supabase.from("applications").select("id,company,role,status").or(`resume_id.eq.${r.id},resume_id.is.null`).order("created_at", { ascending: false })
-      : supabase.from("applications").select("id,company,role,status").eq("resume_id", r.id).order("created_at", { ascending: false }),
+    supabase.from("applications").select("id,company,role,status").eq("resume_id", r.id).order("created_at", { ascending: false }),
   ]);
 
   return (

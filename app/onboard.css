@@ -1,6 +1,6 @@
 /* Shared by /login and /start: Figma frames "Login Page" (2102:357), "Login Page Light" (2112:491) and "Onboarding" (2112:449), 1280x832 canvas. */
-.ob{--o-tx:#feffdc;--o-card:#20171e;--o-field:#2e2429;--o-btn:#a34558;--o-lbl:#e63f6b;--o-seg:#2e2429;--o-seg-on:#a34558;--o-gb:#2e2429;--o-gb-bd:#2e2429;--o-or:#feffdc}
-:root[data-theme="light"] .ob{--o-tx:#242124;--o-card:#f6eae6;--o-field:#fdf8f4;--o-btn:#e63f6b;--o-lbl:#a34558;--o-seg:#eebfbe;--o-seg-on:#e63f6b;--o-gb:#fdf8f4;--o-gb-bd:#a34558;--o-or:#242124}
+.ob{--o-tx:#ffffff;--o-card:#20171e;--o-field:#2e2429;--o-btn:#a34558;--o-lbl:#e63f6b;--o-seg:#2e2429;--o-seg-on:#a34558;--o-gb:#2e2429;--o-gb-bd:#2e2429;--o-or:rgba(163,69,88,.6)}
+:root[data-theme="light"] .ob{--o-tx:#242124;--o-card:#f6eae6;--o-field:#fdf8f4;--o-btn:#e63f6b;--o-lbl:#a34558;--o-seg:#eebfbe;--o-seg-on:#e63f6b;--o-gb:#fdf8f4;--o-gb-bd:#a34558;--o-or:rgba(163,69,88,.5)}
 .ob{color:var(--o-tx)}
 /* Wave art scales with the window (--sc from Stage), centred horizontally and pinned to the top edge so the top wave stays fully visible. */
 .ob .wv{position:absolute;left:calc(640px - 961px * var(--sc,1));top:calc(-1 * var(--dy,0px) - 290px * var(--sc,1));width:calc(1699.44px * var(--sc,1));height:calc(1234px * var(--sc,1));max-width:none;pointer-events:none}

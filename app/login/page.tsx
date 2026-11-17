@@ -39,7 +39,9 @@ export default function Login() {
     setBusy(false);
     if (error) return setMsg(error.message);
     if (mode === "up") return setMsg("Check your email to confirm your account, then log in.");
-    router.push("/start");
+    // First visit (nothing tracked yet): choose how to begin. Returning users go straight to their agenda.
+    const { count } = await supabase.from("applications").select("id", { count: "exact", head: true });
+    router.push(count ? "/home" : "/start");
     router.refresh();
   }
 

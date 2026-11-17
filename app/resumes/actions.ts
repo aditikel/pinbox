@@ -40,7 +40,7 @@ export async function renameResume(id: string, label: string) {
   refresh();
 }
 
-/** Deletes the file and the record. Applications that used it fall back to the default resume. */
+/** Deletes the file and the record. Applications that used it are left with no resume (resume_id set null). */
 export async function deleteResume(id: string, thenGoBack = false) {
   const supabase = await serverClient();
   const { data: r } = await supabase.from("resumes").select("storage_path,is_default").eq("id", id).single();

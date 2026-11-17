@@ -1,7 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { serverClient } from "@/lib/supabase";
-import { key } from "@/lib/normalize";
+import { key, canon } from "@/lib/normalize";
 import { match, mergeCsv, csvStatus, touchKind, priorityFor, type CsvRow, type MergeTarget } from "@/lib/ingest";
 import { STATUSES } from "@/lib/statuses";
 
@@ -28,7 +28,7 @@ export async function saveEntry(_: EntryState, form: FormData): Promise<EntrySta
   if (!company) return { error: "Company is required." };
 
   const fields: Record<string, string | null> = { company, company_key: key(company), role, role_key: key(role), status, next_action: next, deadline };
-  // Only sent when the user has resumes (the dialog hides the field otherwise). Empty = use the default resume.
+  // Only sent when the user has resumes (the dialog hides the field otherwise). Empty = no resume picked.
   if (form.has("resume")) fields.resume_id = String(form.get("resume")) || null;
   let appId = id;
 
@@ -52,10 +52,19 @@ export async function saveEntry(_: EntryState, form: FormData): Promise<EntrySta
   // A next action with a deadline goes on the agenda (once). Rejections never create actions.
   if (appId && next && deadline && status !== "Rejected") {
     const { data: open } = await supabase.from("actions").select("id").eq("application_id", appId).eq("title", next).eq("done", false).limit(1);
-    if (!open?.length) await supabase.from("actions").insert({ user_id: user.id, application_id: appId, title: next, due: deadline, priority: "med" });
+    if (!open?.length) await supabase.from("actions").insert({ user_id: user.id, application_id: appId, title: next, due: deadline, priority: priorityFor(deadline) });
   }
   refresh();
   return { ok: Date.now() };
+}
+
+/** The user's own notes on an application (pipeline notes column). Needs migration 004. */
+export async function saveNotes(id: string, notes: string): Promise<{ error?: string }> {
+  const supabase = await serverClient();
+  const { error } = await supabase.from("applications").update({ notes: notes.slice(0, 5000) }).eq("id", id);
+  if (error) return { error: error.code === "42703" || error.code === "PGRST204" ? "Notes need a one-time database update (supabase/migrations/004_notes_contacts_priority.sql)." : "Couldn't save. Try again." };
+  refresh();
+  return {};
 }
 
 export async function setStar(id: string, starred: boolean) {
@@ -112,11 +121,13 @@ export async function importCsv(_: ImportState, form: FormData): Promise<ImportS
   if (ix.company < 0) return { error: "No “company” column found in the first row." };
 
   const { data: existing, error: readError } = await supabase.from("applications")
-    .select("id,company_key,role,role_key,status,deadline,next_action,date_applied,edited_fields");
+    .select("id,company,company_key,role,role_key,status,deadline,next_action,date_applied,edited_fields");
   if (readError) return { error: "Import failed. Couldn't read your pipeline." };
   const byCompany = new Map<string, MergeTarget[]>();
-  for (const a of (existing ?? []) as (MergeTarget & { company_key: string })[]) {
+  const alias = new Map<string, string>(); // canon(company) -> company_key, so "FTI" in the CSV merges into "FTI Consulting"
+  for (const a of (existing ?? []) as (MergeTarget & { company: string; company_key: string })[]) {
     byCompany.set(a.company_key, [...(byCompany.get(a.company_key) ?? []), a]);
+    if (!alias.has(canon(a.company))) alias.set(canon(a.company), a.company_key);
   }
 
   type Extra = { ck: string; target: { role_key: string }; company: string; row: CsvRow;
@@ -130,7 +141,8 @@ export async function importCsv(_: ImportState, form: FormData): Promise<ImportS
     const get = (i: number) => (i >= 0 ? (r[i] ?? "").trim() : "");
     const company = get(ix.company), role = get(ix.role);
     if (!company) continue;
-    const ck = key(company), rk = key(role);
+    const ck = alias.get(canon(company)) ?? key(company), rk = key(role);
+    if (!alias.has(canon(company))) alias.set(canon(company), ck);
     if (seen.has(ck + "|" + rk)) { unchanged++; continue; } // repeated row in the same file
     seen.add(ck + "|" + rk);
     const row: CsvRow = {

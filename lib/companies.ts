@@ -2,15 +2,16 @@
 
 export type AppIn = { id: string; company: string; company_key: string; role: string; status: string; created_at: string };
 export type EventIn = { application_id: string | null; category: string; occurred_at: string | null; gmail_thread_id: string | null };
-export type TouchIn = { id: string; company: string; company_key: string; person: string; person_role: string; kind: string; happened_on: string; notes: string; referral: boolean };
+export type TouchIn = { id: string; company: string; company_key: string; person: string; person_role: string; kind: string; happened_on: string; notes: string; referral: boolean; contact?: string };
 export type ActionIn = { application_id: string | null; due: string | null };
 
-export type TimelineItem = { date: string; title: string; detail: string; color: string; link: string | null };
+export type TimelineItem = { date: string; title: string; detail: string; color: string; link: string | null; touch?: TouchIn; upcoming?: boolean };
+export type Contact = { name: string; role: string; contact: string };
 export type Company = {
   key: string; name: string; favorite: boolean;
   apps: { id: string; role: string; status: string }[];
   rolesApplied: number; touchpoints: number; referral: boolean;
-  contacts: { name: string; role: string }[];
+  contacts: Contact[];
   lastTouch: string | null; nextDue: string | null;
   timeline: TimelineItem[];
 };
@@ -25,7 +26,7 @@ const EVENT_LABEL: Record<string, [string, string]> = {
   coffee_chat: ["Coffee chat", "#d18951"],
 };
 
-export function buildCompanies(apps: AppIn[], events: EventIn[], touches: TouchIn[], favorites: string[], actions: ActionIn[]): Company[] {
+export function buildCompanies(apps: AppIn[], events: EventIn[], touches: TouchIn[], favorites: string[], actions: ActionIn[], today = new Date().toISOString().slice(0, 10)): Company[] {
   const byKey = new Map<string, Company>();
   const get = (key: string, name: string) => {
     let c = byKey.get(key);
@@ -60,13 +61,17 @@ export function buildCompanies(apps: AppIn[], events: EventIn[], touches: TouchI
     if (!c.lastTouch || date > c.lastTouch) c.lastTouch = date;
   }
 
-  for (const t of touches) {
+  // Oldest first, so a contact keeps the details from the latest touchpoint that has them.
+  for (const t of [...touches].sort((x, y) => x.happened_on.localeCompare(y.happened_on))) {
     const c = get(t.company_key, t.company); // a company can be tracked before any application exists
+    const upcoming = t.happened_on > today; // planned, not happened yet: shows on Home's UPCOMING, not as the last touchpoint
     c.touchpoints++;
     c.referral ||= t.referral;
-    c.timeline.push({ date: t.happened_on, title: `${t.kind} with ${t.person}`, detail: t.notes || t.person_role, color: "#d18951", link: null });
-    if (!c.contacts.some((p) => p.name.toLowerCase() === t.person.toLowerCase())) c.contacts.push({ name: t.person, role: t.person_role });
-    if (!c.lastTouch || t.happened_on > c.lastTouch) c.lastTouch = t.happened_on;
+    c.timeline.push({ date: t.happened_on, title: `${upcoming ? "Upcoming: " : ""}${t.kind} with ${t.person}`, detail: t.notes || t.person_role, color: upcoming ? "#5a8cd7" : "#d18951", link: null, touch: t, upcoming });
+    const p = c.contacts.find((x) => x.name.toLowerCase() === t.person.toLowerCase());
+    if (!p) c.contacts.push({ name: t.person, role: t.person_role, contact: t.contact ?? "" });
+    else { if (t.person_role) p.role = t.person_role; if (t.contact) p.contact = t.contact; }
+    if (!upcoming && (!c.lastTouch || t.happened_on > c.lastTouch)) c.lastTouch = t.happened_on;
   }
 
   for (const a of actions) {

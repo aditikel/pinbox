@@ -1,6 +1,6 @@
 export const metadata = { title: "Pinbox" };
 
-// Dark by default (ignores the system setting). Applies a saved light choice from the sidebar gear before first paint.
+// Dark by default (ignores the system setting). Applies a saved light choice from the sidebar moon button before first paint.
 // The key is versioned so an older saved "light" from before dark became the default is ignored.
 const THEME = `try{var t=localStorage.getItem("pinbox-theme-v2");if(t)document.documentElement.dataset.theme=t}catch(e){}`;
 

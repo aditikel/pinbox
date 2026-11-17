@@ -1,8 +1,9 @@
 import { adminClient } from "./supabase";
 import { decrypt } from "./crypto";
+import { MAX_THREADS } from "./backfill";
 
 // Pre-filter: only likely recruiting mail is ever fetched in full or sent to the LLM.
-const ATS = ["greenhouse.io", "lever.co", "myworkday.com", "ashbyhq.com", "icims.com", "smartrecruiters.com", "hirevue.com", "codesignal.com", "hackerrank.com", "workable.com"];
+const ATS = ["greenhouse.io", "lever.co", "myworkday.com", "ashbyhq.com", "icims.com", "smartrecruiters.com", "hirevue.com", "codesignal.com", "hackerrank.com", "workable.com", "joinhandshake.com"];
 const SUBJECTS = ["thank you for applying", "application received", "assessment", "online assessment", "interview", "coffee chat", "next steps", "offer", "unfortunately", "availability"];
 
 // since is a YYYY-MM-DD date; Gmail's after: takes YYYY/MM/DD.
@@ -37,7 +38,7 @@ const gm = (token: string, path: string) =>
     return r.json();
   });
 
-export async function listThreadIds(token: string, since: string, cap = 300): Promise<string[]> {
+export async function listThreadIds(token: string, since: string, cap = MAX_THREADS): Promise<string[]> {
   const ids = new Set<string>();
   let pageToken = "";
   do {
@@ -51,7 +52,8 @@ export async function listThreadIds(token: string, since: string, cap = 300): Pr
 }
 
 // receivedAt is Gmail's own timestamp (ISO). The Date header is only shown to the classifier.
-export type Slim = { threadId: string; from: string; subject: string; date: string; receivedAt: string; text: string };
+// replied: the student sent at least one message in the thread (Gmail's SENT label). count: messages in the thread.
+export type Slim = { threadId: string; from: string; subject: string; date: string; receivedAt: string; text: string; replied: boolean; count: number };
 
 const b64 = (s: string) => Buffer.from(s.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
 function plain(part: any): string {
@@ -67,5 +69,6 @@ export async function fetchSlim(token: string, threadId: string): Promise<Slim> 
   const h = (n: string) => msg.payload.headers.find((x: any) => x.name.toLowerCase() === n)?.value ?? "";
   const ms = Number(msg.internalDate);
   const receivedAt = new Date(Number.isFinite(ms) && ms > 0 ? ms : Date.now()).toISOString();
-  return { threadId, from: h("from"), subject: h("subject"), date: h("date"), receivedAt, text: trim(plain(msg.payload)) };
+  const replied = t.messages.some((m: any) => (m.labelIds ?? []).includes("SENT"));
+  return { threadId, from: h("from"), subject: h("subject"), date: h("date"), receivedAt, text: trim(plain(msg.payload)), replied, count: t.messages.length };
 }

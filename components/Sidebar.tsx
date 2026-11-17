@@ -22,7 +22,6 @@ export function Sidebar({ current, name }: { current: (typeof NAV)[number][0]; n
       <form action={signOut}>
         <button className="tool" style={{ left: 96 }} title="Log out" aria-label="Log out"><Icon name="out" /></button>
       </form>
-      <button className="tool" style={{ left: 166 }} title="Profile" aria-label="Profile"><Icon name="user" /></button>
     </nav>
   );
 }

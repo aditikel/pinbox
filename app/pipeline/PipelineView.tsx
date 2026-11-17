@@ -1,9 +1,9 @@
 "use client";
-import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { forwardRef, useActionState, useEffect, useImperativeHandle, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { EntryDialog, type EntryDialogHandle, type ResumeOption } from "@/components/EntryDialog";
-import { deleteEntry, importCsv, setStar, type ImportState } from "@/app/entries-actions";
+import { deleteEntry, importCsv, saveNotes, setStar, type ImportState } from "@/app/entries-actions";
 import { BAR, PILL } from "@/lib/statuses";
 
 export type Row = {
@@ -11,30 +11,32 @@ export type Row = {
   next_action: string | null; deadline: string | null; // stored values (for editing)
   shownNext: string | null; shownDue: string | null; // what the table shows
   thread: string | null;
-  resume_id: string | null; // chosen resume (for editing)
-  resumeShown: string | null; // chosen, else the default
+  resume_id: string | null; // the resume the user says they applied with (none unless they pick one)
+  notes: string;
 };
 
 const LEGEND = ["Applied", "OA", "Networking", "Interview", "Offer", "Rejected"];
-// Filter row from the design. "Interested" in the design maps to Applied (there is no Saved status).
-const FILTERS: [string, number, number][] = [["Starred", 322, 78], ["Interview", 422, 92], ["OA", 493, 50], ["Networking", 577, 96], ["Offer", 662, 56], ["Applied", 752, 92], ["Rejected", 857, 90]];
+// Status filter row (under "Filter"). Starred is its own chip next to All, and can be combined with a status.
+const FILTERS = ["Applied", "OA", "Networking", "Interview", "Offer", "Rejected", "Withdrawn"];
 const day = (d: string) => new Date(d + "T00:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
-export function PipelineView({ rows, resumes }: { rows: Row[]; resumes: ResumeOption[] }) {
+export function PipelineView({ rows, resumes, notesReady, google }: { rows: Row[]; resumes: ResumeOption[]; notesReady: boolean; google: boolean }) {
   const [q, setQ] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState("All");
+  const [starOnly, setStarOnly] = useState(false);
   const [, startTransition] = useTransition();
   const dlg = useRef<EntryDialogHandle>(null);
+  const notesDlg = useRef<NotesHandle>(null);
 
   const counts = useMemo(() => Object.fromEntries(LEGEND.map((s) => [s, rows.filter((r) => r.status === s).length])), [rows]);
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
+    // Rows arrive newest first; that order is kept.
     return rows
-      .filter((r) => filter === "All" || (filter === "Starred" ? r.starred : r.status === filter))
-      .filter((r) => !needle || `${r.company} ${r.role}`.toLowerCase().includes(needle))
-      .sort((a, b) => Number(b.starred) - Number(a.starred));
-  }, [rows, q, filter]);
+      .filter((r) => (!starOnly || r.starred) && (filter === "All" || r.status === filter))
+      .filter((r) => !needle || `${r.company} ${r.role}`.toLowerCase().includes(needle));
+  }, [rows, q, filter, starOnly]);
 
   const top = filterOpen ? 305 : 256;
   const today = new Date().toISOString().slice(0, 10);
@@ -58,14 +60,24 @@ export function PipelineView({ rows, resumes }: { rows: Row[]; resumes: ResumeOp
       <input className="sr" placeholder="Search companies, roles..." aria-label="Search companies and roles" value={q} onChange={(e) => setQ(e.target.value)} style={{ left: 283, top: 160, width: 457 }} />
       <span className="sri" style={{ left: 297, top: 166 }}><Icon name="search" /></span>
 
-      <button className={`chip ${!filterOpen && filter === "All" ? "on" : ""}`} style={{ left: 283, top: 217, width: 44, height: 26 }} onClick={() => { setFilter("All"); setFilterOpen(false); }}>All</button>
-      <button className={`chip ${filterOpen ? "on" : ""}`} aria-expanded={filterOpen} style={{ left: 336, top: 217, width: 62, height: 26 }} onClick={() => { setFilterOpen(!filterOpen); if (filterOpen) setFilter("All"); }}>Filter</button>
+      <div className="chips" style={{ left: 283, top: 217 }}>
+        <button className={`chip ${!filterOpen && !starOnly && filter === "All" ? "on" : ""}`} style={{ height: 26, padding: "4px 14px" }} onClick={() => { setFilter("All"); setStarOnly(false); setFilterOpen(false); }}>All</button>
+        <button className={`chip ${starOnly ? "on" : ""}`} aria-pressed={starOnly} style={{ height: 26, padding: "4px 14px" }} onClick={() => setStarOnly(!starOnly)}>★ Starred</button>
+        <button className={`chip ${filterOpen || filter !== "All" ? "on" : ""}`} aria-expanded={filterOpen} style={{ height: 26, padding: "4px 14px" }} onClick={() => { setFilterOpen(!filterOpen); if (filterOpen) setFilter("All"); }}>
+          {filter !== "All" && !filterOpen ? `Status: ${filter}` : "Filter by status"}
+        </button>
+      </div>
+      {google && <Link className="pill" href="/start" style={{ left: 897, top: 217, width: 102, height: 26, lineHeight: "26px" }} title="Read recruiting emails from a date you pick">Backfill gmail</Link>}
       <CsvImport />
       <button className="pill" style={{ left: 1141, top: 217, width: 106, height: 26, lineHeight: "26px" }} onClick={() => dlg.current?.open()}>+ Add entry</button>
 
-      {filterOpen && FILTERS.map(([f, c, w]) => (
-        <button key={f} className={`chip ${filter === f ? "on" : ""}`} aria-pressed={filter === f} style={{ left: c - w / 2, top: 271, width: w, height: 28 }} onClick={() => setFilter(filter === f ? "All" : f)}>{f}</button>
-      ))}
+      {filterOpen && (
+        <div className="chips" style={{ left: 283, top: 271 }}>
+          {FILTERS.map((f) => (
+            <button key={f} className={`chip ${filter === f ? "on" : ""}`} aria-pressed={filter === f} style={{ height: 28 }} onClick={() => setFilter(filter === f ? "All" : f)}>{f}</button>
+          ))}
+        </div>
+      )}
 
       <div className="tw" style={{ top, height: 810 - top }}>
         <div className="tb" role="table" aria-label="Applications">
@@ -90,10 +102,13 @@ export function PipelineView({ rows, resumes }: { rows: Row[]; resumes: ResumeOp
                 {r.thread
                   ? <a className="lk" role="cell" href={`https://mail.google.com/mail/u/0/#all/${r.thread}`} target="_blank" rel="noreferrer" title="Open the latest email in Gmail"><Icon name="chain" size={11} />Link</a>
                   : <span className="lk off" role="cell" title="No email for this entry">—</span>}
-                {r.resumeShown
-                  ? <Link className="ico" style={{ left: 704 }} href={`/resumes/${r.resumeShown}`} title={r.resume_id ? "Open the resume used" : "Open your default resume"} aria-label={`Resume for ${r.company}`}><Icon name="chain" /></Link>
-                  : <button className="ico" style={{ left: 704 }} disabled title="Upload a resume on the Resumes page" aria-label="No resume yet"><Icon name="chain" /></button>}
-                <button className="ico" style={{ left: 795 }} disabled title="Notes aren't built yet" aria-label="Notes (not built yet)"><Icon name="doc" /></button>
+                {r.resume_id
+                  ? <Link className="ico on" style={{ left: 704 }} href={`/resumes/${r.resume_id}`} title={`Applied with ${resumes.find((x) => x.id === r.resume_id)?.label ?? "this resume"}`} aria-label={`Resume for ${r.company}`}><Icon name="chain" /></Link>
+                  : <button className="ico" style={{ left: 704 }} disabled={!resumes.length} title={resumes.length ? "Pick the resume you applied with" : "Upload a resume on the Resumes page first"}
+                      aria-label={`Pick a resume for ${r.company}`} onClick={() => dlg.current?.open(r)}><Icon name="chain" /></button>}
+                <button className={`ico ${r.notes ? "on" : ""}`} style={{ left: 795 }} disabled={!notesReady}
+                  title={!notesReady ? "Notes need supabase/migrations/004_notes_contacts_priority.sql" : r.notes ? r.notes.slice(0, 200) : "Add notes"}
+                  aria-label={`${r.notes ? "Notes" : "Add notes"} for ${r.company}`} onClick={() => notesDlg.current?.open(r)}><Icon name="doc" /></button>
                 <button className="ico" style={{ left: 872 }} aria-label={`Edit ${r.company}`} title="Edit" onClick={() => dlg.current?.open(r)}><Icon name="edit" /></button>
                 <button className="ico" style={{ left: 915 }} aria-label={`Delete ${r.company}`} title="Delete" onClick={() => remove(r)}><Icon name="trash" /></button>
               </div>
@@ -107,9 +122,40 @@ export function PipelineView({ rows, resumes }: { rows: Row[]; resumes: ResumeOp
         </div>
       </div>
       <EntryDialog ref={dlg} resumes={resumes} />
+      <NotesDialog ref={notesDlg} />
     </>
   );
 }
+
+type NotesHandle = { open: (r: Row) => void };
+const NotesDialog = forwardRef<NotesHandle>(function NotesDialog(_, ref) {
+  const dlg = useRef<HTMLDialogElement>(null);
+  const [row, setRow] = useState<Row | null>(null);
+  const [text, setText] = useState("");
+  const [err, setErr] = useState("");
+  const [pending, startTransition] = useTransition();
+  useImperativeHandle(ref, () => ({ open: (r) => { setRow(r); setText(r.notes); setErr(""); dlg.current?.showModal(); } }));
+  return (
+    <dialog ref={dlg} aria-labelledby="notes-title" style={{ width: 460 }}>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        if (!row) return;
+        startTransition(async () => { const res = await saveNotes(row.id, text); if (res.error) setErr(res.error); else dlg.current?.close(); });
+      }}>
+        <h3 id="notes-title">Notes</h3>
+        <p className="dlg-sub">{row ? [row.company, row.role].filter(Boolean).join(" · ") : ""}</p>
+        <label htmlFor="notes-text" style={{ position: "absolute", left: -9999 }}>Notes</label>
+        <textarea id="notes-text" rows={10} maxLength={5000} autoFocus value={text} onChange={(e) => setText(e.target.value)}
+          placeholder="Who you talked to, what to prepare, links…" />
+        {err && <p className="err" role="alert">{err}</p>}
+        <div className="row">
+          <button type="button" className="g" onClick={() => dlg.current?.close()}>Cancel</button>
+          <button disabled={pending}>{pending ? "Saving…" : "Save notes"}</button>
+        </div>
+      </form>
+    </dialog>
+  );
+});
 
 function CsvImport() {
   const form = useRef<HTMLFormElement>(null);

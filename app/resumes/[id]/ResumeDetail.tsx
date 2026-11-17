@@ -40,8 +40,8 @@ export function ResumeDetail(p: { id: string; label: string; isDefault: boolean;
 
       <div className="a rd-def">
         {p.isDefault ? <span className="df">DEFAULT</span> : <button onClick={() => startTransition(() => setDefaultResume(p.id))}>Make default</button>}
-        <span>{p.isDefault ? "Used for every application without its own resume." : "Attach it to an application from the pipeline's edit dialog."}</span>
-        <button className="rd-del" onClick={() => { if (confirm(`Delete ${p.label}? Applications that used it will use your default resume.`)) startTransition(() => deleteResume(p.id, true)); }}>Delete</button>
+        <span>{p.isDefault ? "Pre-selected when you add a new entry." : "Attach it to an application from the pipeline's resume icon."}</span>
+        <button className="rd-del" onClick={() => { if (confirm(`Delete ${p.label}? Applications that used it will show no resume.`)) startTransition(() => deleteResume(p.id, true)); }}>Delete</button>
       </div>
 
       <div className="a rd-prev">
@@ -68,7 +68,7 @@ export function ResumeDetail(p: { id: string; label: string; isDefault: boolean;
             </div>
           );
         })}
-        {!shown.length && <div className="nodata" style={{ top: 90 }}>{p.apps.length ? "No applications match." : "No applications use this resume yet."}</div>}
+        {!shown.length && <div className="nodata" style={{ top: 90 }}>{p.apps.length ? "No applications match." : "No applications use this resume yet. Pick it from the pipeline's resume icon."}</div>}
       </div>
     </>
   );

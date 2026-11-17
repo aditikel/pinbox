@@ -33,10 +33,11 @@ export const EntryDialog = forwardRef<EntryDialogHandle, { resumes?: ResumeOptio
         <label>Next action<input name="next" placeholder="Complete OA" defaultValue={entry.next_action ?? ""} /></label>
         <label>Deadline<input name="deadline" type="date" defaultValue={entry.deadline ?? ""} /></label>
         {resumes.length > 0 && (
-          <label>Resume
-            <select name="resume" defaultValue={entry.resume_id ?? ""}>
-              <option value="">Default resume{(() => { const d = resumes.find((r) => r.isDefault); return d ? ` (${d.label})` : ""; })()}</option>
-              {resumes.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
+          <label>Resume you applied with
+            {/* New entries start on the default resume; existing ones show only what the user picked. */}
+            <select name="resume" defaultValue={editing ? entry.resume_id ?? "" : resumes.find((r) => r.isDefault)?.id ?? ""}>
+              <option value="">Not set</option>
+              {resumes.map((r) => <option key={r.id} value={r.id}>{r.label}{r.isDefault ? " (default)" : ""}</option>)}
             </select>
           </label>
         )}

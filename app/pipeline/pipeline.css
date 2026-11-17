@@ -23,6 +23,6 @@
 .lk{left:597px;height:20px;border-radius:10px;background:var(--pn2);color:var(--ac);font:400 11px/20px Mulish;padding:0 11px;display:flex;gap:4px;align-items:center;text-decoration:none}
 .lk.off{color:var(--mu)}
 .ico{width:30px;height:30px;color:var(--ic);background:none;border:0;padding:4px}.ico:disabled{opacity:.35;cursor:not-allowed}
-.ico:not(:disabled):hover{color:var(--ac)}
+.ico:not(:disabled):hover{color:var(--ac)}.ico.on{color:var(--or)}
 .star{flex:none;background:none;border:0;padding:0;width:18px;height:18px;color:var(--or);opacity:0;transition:opacity .15s}
 .star.on,.r:hover .star,.star:focus-visible{opacity:1}

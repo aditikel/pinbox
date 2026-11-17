@@ -23,7 +23,8 @@ export async function middleware(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const isPublic = PUBLIC.some((p) => req.nextUrl.pathname.startsWith(p));
   if (!user && !isPublic) return NextResponse.redirect(new URL("/login", req.url));
-  if (user && req.nextUrl.pathname === "/login") return NextResponse.redirect(new URL("/start", req.url));
+  // Already signed in: go to the app. New accounts are sent to /start by the login page and /auth/callback instead.
+  if (user && req.nextUrl.pathname === "/login") return NextResponse.redirect(new URL("/home", req.url));
   return res;
 }
 

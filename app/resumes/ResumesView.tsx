@@ -85,7 +85,7 @@ export function ResumesView({ resumes, owner, needsMigration }: { resumes: Resum
                     <Link role="menuitem" href={`/resumes/${r.id}`}>Open</Link>
                     <button role="menuitem" className="danger" onClick={() => {
                       setMenu(null);
-                      if (confirm(`Delete ${r.label}? Applications that used it will use your default resume.`)) startTransition(() => deleteResume(r.id));
+                      if (confirm(`Delete ${r.label}? Applications that used it will show no resume.`)) startTransition(() => deleteResume(r.id));
                     }}>Delete</button>
                   </div>
                 )}

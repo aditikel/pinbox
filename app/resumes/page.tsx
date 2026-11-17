@@ -18,11 +18,10 @@ export default async function Resumes() {
   ]);
   const needsMigration = !!res.error || !!apps.error;
 
-  // Applications with no resume chosen use the default one.
-  const unassigned = (apps.data ?? []).filter((a) => !a.resume_id).length;
+  // Only applications the user attached a resume to count. Pinbox can't know which resume was sent, so it never assumes.
   const cards: ResumeCard[] = (res.data ?? []).map((r) => ({
     id: r.id, label: r.label, isDefault: r.is_default, uploadedAt: r.uploaded_at,
-    apps: (apps.data ?? []).filter((a) => a.resume_id === r.id).length + (r.is_default ? unassigned : 0),
+    apps: (apps.data ?? []).filter((a) => a.resume_id === r.id).length,
   }));
 
   return (

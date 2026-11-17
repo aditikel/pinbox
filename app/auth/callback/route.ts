@@ -27,5 +27,7 @@ export async function GET(req: Request) {
       return NextResponse.redirect(`${origin}/start?gmail=save_failed`);
     }
   }
-  return NextResponse.redirect(`${origin}/start`);
+  // First visit (nothing tracked yet): choose how to begin. Returning users go straight to their agenda.
+  const { count } = await supabase.from("applications").select("id", { count: "exact", head: true });
+  return NextResponse.redirect(`${origin}${count ? "/home" : "/start"}`);
 }
