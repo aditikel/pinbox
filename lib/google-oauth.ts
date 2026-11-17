@@ -1,12 +1,4 @@
-// Sign in with Google on /login: name and email only (non-sensitive scopes, so no
-// "unverified app" screen). No offline access, so Google returns no refresh token and
-// /auth/callback never overwrites a saved Gmail token with one that can't read Gmail.
-export const googleLoginOptions = (origin: string) => ({
-  redirectTo: `${origin}/auth/callback`,
-  queryParams: { prompt: "select_account" },
-});
-
-// Connect Gmail on /start: asks for Gmail and Calendar read access.
+// Google OAuth options shared by /login (sign in with Google) and /start (connect Gmail to an email account).
 export const GOOGLE_SCOPES = [
   "https://www.googleapis.com/auth/gmail.readonly",
   "https://www.googleapis.com/auth/calendar.readonly",

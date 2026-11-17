@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { browserClient } from "@/lib/supabase-browser";
-import { googleLoginOptions } from "@/lib/google-oauth";
+import { googleOptions } from "@/lib/google-oauth";
 import { Stage } from "@/components/Stage";
 import "../app.css";
 import "../onboard.css";
@@ -47,7 +47,7 @@ export default function Login() {
     setBusy(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: googleLoginOptions(location.origin),
+      options: googleOptions(location.origin),
     });
     if (error) { setBusy(false); setMsg(error.message); }
   }
