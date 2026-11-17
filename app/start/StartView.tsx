@@ -14,7 +14,7 @@ type Line = { type: "progress" | "done" | "error"; scanned?: number; total?: num
 const PRESETS = [["30 days", 30], ["60 days", 60], ["90 days", 90], ["6 months", 182]] as const;
 const pretty = (d: string) => new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-export function StartView({ google }: { google: boolean }) {
+export function StartView({ google, connected }: { google: boolean; connected: boolean }) {
   const router = useRouter();
   const dlg = useRef<HTMLDialogElement>(null);
   const [state, setState] = useState<"idle" | "running" | "error">("idle");
@@ -30,7 +30,8 @@ export function StartView({ google }: { google: boolean }) {
     }
   }, []);
 
-  // Only Google accounts see the backfill, so reconnecting is just asking Google for consent again.
+  // Only Google accounts see the backfill. Login asked for name and email only, so this
+  // is where Google asks for Gmail and Calendar access (first connect and reconnect).
   async function connectGoogle() {
     const { error } = await browserClient().auth.signInWithOAuth({ provider: "google", options: googleOptions(location.origin) });
     if (error) { setState("error"); setMsg(error.message); }
@@ -91,7 +92,9 @@ export function StartView({ google }: { google: boolean }) {
         <h1 className="t" style={{ left: 689, top: 207, font: "500 36px/1.2 var(--hd)" }}>How would you like to begin?</h1>
         {google ? (
           <>
-            <button className="btn" disabled={running} onClick={() => dlg.current?.showModal()} aria-haspopup="dialog" style={{ left: 751, top: 292 }}>{running ? "backfilling…" : "backfill gmail*"}</button>
+            {connected
+              ? <button className="btn" disabled={running} onClick={() => dlg.current?.showModal()} aria-haspopup="dialog" style={{ left: 751, top: 292 }}>{running ? "backfilling…" : "backfill gmail*"}</button>
+              : <button className="btn" onClick={connectGoogle} style={{ left: 751, top: 292 }}>connect gmail*</button>}
             <p className="t note" style={{ top: 346 }}>*by pressing this option, you give permission<br />for an LLM to scrape your inbox from a date you choose</p>
           </>
         ) : (
@@ -112,7 +115,7 @@ export function StartView({ google }: { google: boolean }) {
           </div>
         )}
         {msg && <p role="status" className={`msg ${state === "error" ? "err" : ""}`} style={{ left: 751, top: google ? 512 : 518, width: 390 }}>{msg}</p>}
-        {google && needGoogle && <button className="btn dk" onClick={connectGoogle} style={{ left: 751, top: 580, border: "1px solid #a34558" }}>reconnect gmail</button>}
+        {google && connected && needGoogle && <button className="btn dk" onClick={connectGoogle} style={{ left: 751, top: 580, border: "1px solid #a34558" }}>reconnect gmail</button>}
       </div>
 
       <dialog ref={dlg} aria-labelledby="bf-title" style={box}>
