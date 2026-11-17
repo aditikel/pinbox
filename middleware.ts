@@ -1,7 +1,8 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC = ["/login", "/auth"];
+// /privacy and /terms are linked from Google's OAuth consent screen, so signed-out visitors must reach them.
+const PUBLIC = ["/login", "/auth", "/privacy", "/terms"];
 
 export async function middleware(req: NextRequest) {
   let res = NextResponse.next({ request: req });
